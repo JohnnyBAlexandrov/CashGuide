@@ -1,3 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">CashGuide</string>
+    <string name="app_name">КэшГид</string>
+
+    <!-- Main -->
+    <string name="main_title">КэшГид</string>
+    <string name="action_search">Поиск карты</string>
+    <string name="action_history">История</string>
+    <string name="add_card">Добавить карту</string>
+    <string name="empty_cards">Пока нет карт.\nНажмите «+», чтобы добавить первую карту.</string>
+    <string name="cashback_this_month">Кэшбэк за месяц: %1$s</string>
+    <string name="cashback_settings">Кэшбэк</string>
+    <string name="edit">Изменить</string>
+    <string name="delete">Удалить</string>
+    <string name="delete_card_title">Удалить карту?</string>
+    <string name="delete_card_message">Будут удалены настройки кэшбэка и все операции по этой карте.</string>
+    <string name="cancel">Отмена</string>
+
+    <!-- Card detail -->
+    <string name="card_new_title">Новая карта</string>
+    <string name="card_edit_title">Редактирование карты</string>
+    <string name="card_bank">Банк</string>
+    <string name="card_name">Название карты</string>
+    <string name="card_balance">Баланс</string>
+    <string name="card_currency">Валюта</string>
+    <string name="card_limit">Месячный лимит кэшбэка (необязательно)</string>
+    <string name="card_limit_hint">Например: 3000</string>
+    <string name="save">Сохранить</string>
+    <string name="delete_card_btn">Удалить карту</string>
+
+    <!-- Cashback setup -->
+    <string name="cashback_setup_title">Настройка кэшбэка</string>
+    <string name="cashback_for_month">Настройки на %1$s</string>
+    <string name="copy_previous_month">Скопировать из прошлого месяца</string>
+    <string name="cashback_percent">Кэшбэк, %</string>
+    <string name="cashback_spent">Потрачено</string>
+    <string name="save_settings">Сохранить настройки</string>
+
+    <!-- Search -->
+    <string name="search_title">Поиск лучшей карты</string>
+    <string name="search_category">Категория покупки</string>
+    <string name="search_amount">Сумма покупки</string>
+    <string name="search_button">Найти лучшую карту</string>
+    <string name="search_empty">Заполните сумму и нажмите «Найти лучшую карту».</string>
+    <string name="recommended">Рекомендуем</string>
+    <string name="cashback_rate">Кэшбэк: %1$s%%</string>
+    <string name="you_get">Вы получите: %1$s</string>
+
+    <!-- History -->
+    <string name="history_title">История операций</string>
+    <string name="history_empty">Операций пока нет.</string>
+    <string name="all_cards">Все карты</string>
+    <string name="all_categories">Все категории</string>
+    <string name="filter_card">Карта</string>
+    <string name="filter_category">Категория</string>
+    <string name="filter_from">С даты</string>
+    <string name="filter_to">По дату</string>
+    <string name="apply_filters">Применить фильтры</string>
+    <string name="reset_filters">Сбросить</string>
+    <string name="add_transaction">Добавить операцию</string>
+
+    <!-- Transaction edit -->
+    <string name="transaction_new_title">Новая операция</string>
+    <string name="transaction_edit_title">Редактирование операции</string>
+    <string name="tx_card">Карта</string>
+    <string name="tx_expense">Расход</string>
+    <string name="tx_income">Доход</string>
+    <string name="tx_amount">Сумма</string>
+    <string name="tx_category">Категория</string>
+    <string name="tx_note">Заметка (необязательно)</string>
+    <string name="tx_date">Дата: %1$s</string>
 </resources>

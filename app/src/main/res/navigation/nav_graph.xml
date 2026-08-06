@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="ru.cashguide.prod.presentation.fragment.MainFragment"
+        android:label="@string/main_title"
+        tools:layout="@layout/fragment_main">
+
+        <action
+            android:id="@+id/action_main_to_cardDetail"
+            app:destination="@id/cardDetailFragment" />
+
+        <action
+            android:id="@+id/action_main_to_cashbackSetup"
+            app:destination="@id/cashbackSetupFragment" />
+
+        <action
+            android:id="@+id/action_main_to_search"
+            app:destination="@id/searchFragment" />
+
+        <action
+            android:id="@+id/action_main_to_history"
+            app:destination="@id/historyFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cardDetailFragment"
+        android:name="ru.cashguide.prod.presentation.fragment.CardDetailFragment"
+        android:label="@string/card_new_title"
+        tools:layout="@layout/fragment_card_detail">
+
+        <argument
+            android:name="cardId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cashbackSetupFragment"
+        android:name="ru.cashguide.prod.presentation.fragment.CashbackSetupFragment"
+        android:label="@string/cashback_setup_title"
+        tools:layout="@layout/fragment_cashback_setup">
+
+        <argument
+            android:name="cardId"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="ru.cashguide.prod.presentation.fragment.SearchFragment"
+        android:label="@string/search_title"
+        tools:layout="@layout/fragment_search" />
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="ru.cashguide.prod.presentation.fragment.HistoryFragment"
+        android:label="@string/history_title"
+        tools:layout="@layout/fragment_history">
+
+        <action
+            android:id="@+id/action_history_to_transactionEdit"
+            app:destination="@id/transactionEditFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/transactionEditFragment"
+        android:name="ru.cashguide.prod.presentation.fragment.TransactionEditFragment"
+        android:label="@string/transaction_new_title"
+        tools:layout="@layout/fragment_transaction_edit">
+
+        <argument
+            android:name="cardId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+
+        <argument
+            android:name="transactionId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
+
+</navigation>
