@@ -69,4 +69,13 @@
     <string name="tx_category">Категория</string>
     <string name="tx_note">Заметка (необязательно)</string>
     <string name="tx_date">Дата: %1$s</string>
+
+    <!-- Update -->
+    <string name="update_title">Доступна новая версия</string>
+    <string name="update_message">Вышла новая версия приложения (%1$d).\nСкачать и установить её сейчас?</string>
+    <string name="update_download">Скачать и установить</string>
+    <string name="update_download_notification">КэшГид: загрузка обновления</string>
+    <string name="update_need_install_permission">Чтобы установить обновление, разрешите приложению устанавливать неизвестные приложения.</string>
+    <string name="update_goto_settings">Открыть настройки</string>
+    <string name="app_version">Версия %1$s</string>
 </resources>

@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
 
+import ru.cashguide.prod.BuildConfig;
 import ru.cashguide.prod.R;
 import ru.cashguide.prod.data.local.db.Card;
 import ru.cashguide.prod.presentation.adapter.CardAdapter;
@@ -92,6 +93,9 @@ public class MainFragment extends Fragment {
 
         viewModel.getCurrentMonth().observe(getViewLifecycleOwner(),
                 month -> monthLabel.setText(Formatting.formatMonthYear(month)));
+
+        TextView versionLabel = view.findViewById(R.id.versionLabel);
+        versionLabel.setText(getString(R.string.app_version, BuildConfig.VERSION_NAME));
         viewModel.getCards().observe(getViewLifecycleOwner(), list -> {
             adapter.submitList(list);
             view.findViewById(R.id.emptyView)

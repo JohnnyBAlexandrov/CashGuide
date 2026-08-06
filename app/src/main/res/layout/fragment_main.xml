@@ -77,6 +77,15 @@
                 android:textSize="16sp"
                 android:visibility="gone" />
         </FrameLayout>
+
+        <TextView
+            android:id="@+id/versionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingVertical="6dp"
+            android:textColor="@color/muted"
+            android:textSize="12sp" />
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

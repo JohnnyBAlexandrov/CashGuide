@@ -14,10 +14,17 @@ android {
         applicationId = "ru.cashguide.prod"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 71
+        versionName = "1.0.71"
+
+        buildConfigField("String", "UPDATE_URL", "\"http://185.26.115.32:8088/cashguide/api/getversion.php\"")
+        buildConfigField("String", "APK_URL", "\"http://185.26.115.32:8088/cashguide/cashguide.apk\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -53,6 +60,7 @@ dependencies {
     implementation(libs.navigation.ui)
 
     implementation(libs.threetenabp)
+    implementation(libs.yandex.ads)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
