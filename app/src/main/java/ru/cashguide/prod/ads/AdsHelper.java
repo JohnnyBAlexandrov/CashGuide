@@ -22,8 +22,8 @@ import ru.cashguide.prod.BuildConfig;
 
 public final class AdsHelper {
 
-    private static final String BANNER_AD_UNIT_ID = "demo-banner-yandex";
-    private static final String INTERSTITIAL_AD_UNIT_ID = "demo-interstitial-yandex";
+    private static final String BANNER_AD_UNIT_ID = BuildConfig.BANNER_AD_UNIT_ID;
+    private static final String INTERSTITIAL_AD_UNIT_ID = BuildConfig.INTERSTITIAL_AD_UNIT_ID;
     private static final long MIN_INTERSTITIAL_INTERVAL_MS = 60_000L;
 
     private static InterstitialAd interstitialAd;

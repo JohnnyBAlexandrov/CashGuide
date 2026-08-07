@@ -1,5 +1,19 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
+}
+
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use { load(it) }
+    }
+}
+
+fun adUnitId(key: String, fallback: String): String {
+    val value = localProperties.getProperty(key)?.takeIf { it.isNotBlank() } ?: fallback
+    return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 }
 
 android {
@@ -19,6 +33,8 @@ android {
 
         buildConfigField("String", "UPDATE_URL", "\"http://185.26.115.32:8088/cashguide/api/getversion.php\"")
         buildConfigField("String", "APK_URL", "\"http://185.26.115.32:8088/cashguide/cashguide.apk\"")
+        buildConfigField("String", "BANNER_AD_UNIT_ID", adUnitId("ad_unit_id_banner", "demo-banner-yandex"))
+        buildConfigField("String", "INTERSTITIAL_AD_UNIT_ID", adUnitId("ad_unit_id_interstitial", "demo-interstitial-yandex"))
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
