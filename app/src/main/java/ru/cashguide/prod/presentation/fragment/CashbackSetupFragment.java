@@ -73,6 +73,8 @@ public class CashbackSetupFragment extends Fragment {
 
         TextView tvCardName = view.findViewById(R.id.tvCardName);
         TextView tvMonth = view.findViewById(R.id.tvMonth);
+        TextView tvScanInfo = view.findViewById(R.id.tvScanInfo);
+        TextView tvScanUnrecognized = view.findViewById(R.id.tvScanUnrecognized);
         MaterialButton btnAddCategory = view.findViewById(R.id.btnAddCategory);
         MaterialButton btnScan = view.findViewById(R.id.btnScan);
         MaterialButton btnCopy = view.findViewById(R.id.btnCopy);
@@ -138,6 +140,20 @@ public class CashbackSetupFragment extends Fragment {
         });
         viewModel.getMessage().observe(getViewLifecycleOwner(),
                 msg -> Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show());
+        viewModel.getCategoriesAddedToCatalog().observe(getViewLifecycleOwner(), list -> {
+            if (list != null && !list.isEmpty()) {
+                tvScanInfo.setText(getString(R.string.scan_new_categories_added,
+                        String.join(", ", list)));
+                tvScanInfo.setVisibility(View.VISIBLE);
+            }
+        });
+        viewModel.getUnrecognizedCategories().observe(getViewLifecycleOwner(), list -> {
+            if (list != null && !list.isEmpty()) {
+                tvScanUnrecognized.setText(getString(R.string.scan_unrecognized_hint,
+                        String.join("; ", list)));
+                tvScanUnrecognized.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void showAddCategoryDialog() {
@@ -291,7 +307,8 @@ public class CashbackSetupFragment extends Fragment {
                             CashbackScreenshotParser.SettingsResult result =
                                     new CashbackScreenshotParser(candidates).parseSettings(text);
                             int count = viewModel.applyRecognized(
-                                    result.percentByCategory, result.limitByCategory);
+                                    result.percentByCategory, result.limitByCategory,
+                                    result.unrecognizedLines);
                             if (count > 0) {
                                 Toast.makeText(requireContext(),
                                         getString(

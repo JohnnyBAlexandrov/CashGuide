@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -43,6 +44,8 @@ public class CashbackSetupViewModel extends AndroidViewModel {
     private final MutableLiveData<List<String>> allCategoryNames = new MutableLiveData<>();
     private final MutableLiveData<YearMonth> month = new MutableLiveData<>();
     private final SingleLiveEvent<String> message = new SingleLiveEvent<>();
+    private final SingleLiveEvent<List<String>> categoriesAddedToCatalog = new SingleLiveEvent<>();
+    private final SingleLiveEvent<List<String>> unrecognizedCategories = new SingleLiveEvent<>();
 
     private final List<CashbackCategory> editorItems = new ArrayList<>();
     private final List<Category> allCategories = new ArrayList<>();
@@ -78,6 +81,14 @@ public class CashbackSetupViewModel extends AndroidViewModel {
 
     public LiveData<String> getMessage() {
         return message;
+    }
+
+    public LiveData<List<String>> getCategoriesAddedToCatalog() {
+        return categoriesAddedToCatalog;
+    }
+
+    public LiveData<List<String>> getUnrecognizedCategories() {
+        return unrecognizedCategories;
     }
 
     public void init(long id) {
@@ -183,8 +194,10 @@ public class CashbackSetupViewModel extends AndroidViewModel {
      * и добавляет новые для найденных категорий.
      */
     public int applyRecognized(Map<String, Double> percentByCategory,
-                               Map<String, Double> limitByCategory) {
+                               Map<String, Double> limitByCategory,
+                               List<String> unrecognizedLines) {
         Set<String> updated = new HashSet<>();
+        List<String> addedToCatalog = new ArrayList<>();
         YearMonth currentMonth = month.getValue();
         for (Map.Entry<String, Double> entry : percentByCategory.entrySet()) {
             String canonical = entry.getKey();
@@ -214,11 +227,24 @@ public class CashbackSetupViewModel extends AndroidViewModel {
                 item.year = currentMonth.getYear();
                 editorItems.add(item);
                 updated.add(canonical.toLowerCase(Locale.ROOT));
+                addedToCatalog.add(canonical);
             }
         }
         if (!updated.isEmpty()) {
             settings.setValue(new ArrayList<>(editorItems));
             refreshAvailableCategories();
+        }
+        if (!addedToCatalog.isEmpty()) {
+            Disposable disposable = categoryRepository.ensurePresent(new ArrayList<>(addedToCatalog))
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(() -> {
+                    }, throwable -> {
+                    });
+            disposables.add(disposable);
+            categoriesAddedToCatalog.setValue(new ArrayList<>(addedToCatalog));
+        }
+        if (unrecognizedLines != null && !unrecognizedLines.isEmpty()) {
+            unrecognizedCategories.setValue(new ArrayList<>(unrecognizedLines));
         }
         return updated.size();
     }
@@ -241,7 +267,7 @@ public class CashbackSetupViewModel extends AndroidViewModel {
             }
             int distance = CategoryNormalizer.levenshtein(normalizedCanonical,
                     CategoryNormalizer.normalize(item.category));
-            int threshold = Math.max(2, normalizedCanonical.length() / 3);
+            int threshold = CategoryNormalizer.fuzzyThreshold(normalizedCanonical);
             if (distance <= threshold) {
                 if (bestDistance > distance) {
                     bestDistance = distance;
@@ -293,8 +319,17 @@ public class CashbackSetupViewModel extends AndroidViewModel {
             message.setValue("Нет данных для сохранения");
             return;
         }
-        Disposable disposable = cashbackRepository.saveSettings(
-                        cardId, currentMonth.getMonthValue(), currentMonth.getYear(), editedItems)
+        List<CashbackCategory> items = editedItems == null ? new ArrayList<>() : editedItems;
+        List<String> names = new ArrayList<>();
+        for (CashbackCategory item : items) {
+            if (item.category != null) {
+                names.add(item.category);
+            }
+        }
+        Completable save = cashbackRepository.saveSettings(
+                        cardId, currentMonth.getMonthValue(), currentMonth.getYear(), items)
+                .andThen(categoryRepository.ensurePresent(names));
+        Disposable disposable = save
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

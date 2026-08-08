@@ -14,6 +14,9 @@ public interface CategoryDao {
     @Insert
     long insert(Category category);
 
+    @Insert
+    List<Long> insertAll(List<Category> categories);
+
     @Query("SELECT * FROM categories ORDER BY sortOrder, name")
     Flowable<List<Category>> observeAll();
 
@@ -25,6 +28,9 @@ public interface CategoryDao {
 
     @Query("DELETE FROM categories WHERE id = :id")
     int delete(long id);
+
+    @Query("DELETE FROM categories WHERE name IN (:names)")
+    int deleteByName(List<String> names);
 
     @Query("UPDATE categories SET name = :name WHERE id = :id")
     int rename(long id, String name);

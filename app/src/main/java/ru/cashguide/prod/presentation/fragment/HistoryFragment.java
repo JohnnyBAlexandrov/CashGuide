@@ -30,6 +30,7 @@ import org.threeten.bp.ZoneId;
 import ru.cashguide.prod.R;
 import ru.cashguide.prod.data.local.db.Card;
 import ru.cashguide.prod.data.local.db.Transaction;
+import ru.cashguide.prod.domain.model.TransactionWithCashback;
 import ru.cashguide.prod.presentation.adapter.TransactionAdapter;
 import ru.cashguide.prod.presentation.viewmodel.HistoryViewModel;
 import ru.cashguide.prod.util.DrawerUi;
@@ -64,7 +65,7 @@ public class HistoryFragment extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.rvTransactions);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new TransactionAdapter(transaction -> confirmDelete(transaction));
+        adapter = new TransactionAdapter(item -> confirmDelete(item.transaction));
         recyclerView.setAdapter(adapter);
 
         Spinner spCardFilter = view.findViewById(R.id.spCardFilter);

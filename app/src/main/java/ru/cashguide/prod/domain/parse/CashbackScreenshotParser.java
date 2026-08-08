@@ -130,12 +130,17 @@ public final class CashbackScreenshotParser {
                 if (category == null) {
                     category = findClosestCategory(name);
                 }
+                if (category == null) {
+                    category = sanitizeNewCategoryName(name);
+                }
                 if (category != null) {
                     result.percentByCategory.put(category, percent);
                     Double limit = findLimit(line);
                     if (limit != null) {
                         result.limitByCategory.put(category, limit);
                     }
+                } else {
+                    result.unrecognizedLines.add(line);
                 }
                 continue;
             }
@@ -158,9 +163,49 @@ public final class CashbackScreenshotParser {
                 if (limit != null) {
                     result.limitByCategory.put(category, limit);
                 }
+            } else if (findPercent(line) != null || findPercentNearby(lines, i + 1) != null) {
+                result.unrecognizedLines.add(line);
             }
         }
         return result;
+    }
+
+    private static final Pattern LIMIT_WORD_PATTERN = Pattern.compile(
+            "(?i)(лимит|максимальн|до\\s)");
+
+    private static final Pattern SUM_TOKEN_PATTERN = Pattern.compile(
+            "(?i)[0-9][0-9\\s.,]*(?:₽|рублей|рубля|руб\\.?|р\\.|rub|rur)?");
+
+    /**
+     * Принимает распознанное имя новой категории (не входящей в каталог),
+     * если строка похожа на название: обрезает служебные слова и суммы,
+     * требует не менее трёх букв. Искажённые OCR имена с латиницей
+     * (например {@code MeTCKIM MMp} вместо «Детский мир») отбрасываются.
+     * Иначе возвращает {@code null}.
+     */
+    private static String sanitizeNewCategoryName(String name) {
+        if (name == null) {
+            return null;
+        }
+        String value = name.trim();
+        Matcher matcher = LIMIT_WORD_PATTERN.matcher(value);
+        if (matcher.find()) {
+            value = value.substring(0, matcher.start()).trim();
+        }
+        value = SUM_TOKEN_PATTERN.matcher(value).replaceAll("").replaceAll("\\s+", " ").trim();
+        value = value.replaceAll("[₽,|»«'’\\-–—/]", " ").replaceAll("\\s+", " ").trim();
+        value = value.replaceFirst("^р\\.?\\s+", "").trim();
+        if (value.length() < 3) {
+            return null;
+        }
+        if (value.replaceAll("[^A-Za-zА-Яа-яЁё]", "").length() < 3) {
+            return null;
+        }
+        boolean hasLatin = value.matches(".*[A-Za-z].*");
+        if (hasLatin) {
+            return null;
+        }
+        return value;
     }
 
     private static Double parsePercentFromGroup(String group) {
@@ -192,7 +237,7 @@ public final class CashbackScreenshotParser {
                 continue;
             }
             int distance = CategoryNormalizer.levenshtein(normalized, c);
-            int threshold = Math.max(2, normalized.length() / 3);
+            int threshold = CategoryNormalizer.fuzzyThreshold(normalized);
             if (distance <= threshold && (best == null || distance < bestDistance)) {
                 bestDistance = distance;
                 best = candidate;
@@ -344,6 +389,8 @@ public final class CashbackScreenshotParser {
     public static final class SettingsResult {
         public final Map<String, Double> percentByCategory = new HashMap<>();
         public final Map<String, Double> limitByCategory = new HashMap<>();
+        /** Строки с процентом, по которым не удалось определить категорию. */
+        public final List<String> unrecognizedLines = new ArrayList<>();
 
         public int matchedCount() {
             return percentByCategory.size() + limitByCategory.size();

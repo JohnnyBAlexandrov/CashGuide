@@ -25,6 +25,7 @@ import ru.cashguide.prod.data.repository.CardRepository;
 import ru.cashguide.prod.data.repository.CashbackRepository;
 import ru.cashguide.prod.di.AppContainer;
 import ru.cashguide.prod.domain.model.CardWithCashback;
+import ru.cashguide.prod.domain.model.CashbackCalculator;
 import ru.cashguide.prod.presentation.util.SingleLiveEvent;
 import ru.cashguide.prod.util.MonthPreference;
 
@@ -120,7 +121,7 @@ public class MainViewModel extends AndroidViewModel {
             List<CashbackCategory> cardSettings =
                     byCard.getOrDefault(card.id, Collections.emptyList());
             for (CashbackCategory setting : cardSettings) {
-                total += setting.spentThisMonth * setting.percent / 100.0;
+                total += CashbackCalculator.earnedInCategory(card, setting);
             }
             result.add(new CardWithCashback(card, total, cardSettings));
         }

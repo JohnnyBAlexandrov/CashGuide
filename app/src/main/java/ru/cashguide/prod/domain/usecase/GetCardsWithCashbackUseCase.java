@@ -11,6 +11,7 @@ import ru.cashguide.prod.data.local.db.CashbackCategory;
 import ru.cashguide.prod.data.repository.CardRepository;
 import ru.cashguide.prod.data.repository.CashbackRepository;
 import ru.cashguide.prod.domain.model.CardWithCashback;
+import ru.cashguide.prod.domain.model.CashbackCalculator;
 
 /**
  * Возвращает список карт с итоговым кэшбэком, «заработанным» за месяц
@@ -42,7 +43,7 @@ public class GetCardsWithCashbackUseCase {
             List<CashbackCategory> cardSettings =
                     byCard.getOrDefault(card.id, new ArrayList<>());
             for (CashbackCategory setting : cardSettings) {
-                total += setting.spentThisMonth * setting.percent / 100.0;
+                total += CashbackCalculator.earnedInCategory(card, setting);
             }
             result.add(new CardWithCashback(card, total, cardSettings));
         }

@@ -35,6 +35,23 @@ public final class CategoryNormalizer {
         return sb.toString();
     }
 
+    /**
+     * Допустимое расстояние Левенштейна для нечёткого совпадения
+     * с учётом длины строки (OCR-ошибки в длинных названиях более вероятны).
+     */
+    public static int fuzzyThreshold(String normalized) {
+        return Math.max(3, (int) Math.ceil(normalized.length() * 0.4));
+    }
+
+    /**
+     * Признак «мусорного» названия категории: содержит латиницу.
+     * Такие имена — почти всегда искажение OCR русского названия
+     * (например {@code MeTCKIM MMp} вместо «Детский мир»).
+     */
+    public static boolean isJunkName(String name) {
+        return name != null && name.matches(".*[A-Za-z].*");
+    }
+
     public static int levenshtein(String a, String b) {
         int[] prev = new int[b.length() + 1];
         int[] curr = new int[b.length() + 1];
@@ -60,16 +77,22 @@ public final class CategoryNormalizer {
         switch (c) {
             case 'a': return 'а';
             case 'b': return 'б';
+            case 'c': return 'с';
+            case 'd': return 'д';
             case 'e': return 'е';
             case 'h': return 'н';
             case 'i': return 'и';
             case 'k': return 'к';
             case 'm': return 'м';
+            case 'n': return 'п';
             case 'o': return 'о';
             case 'p': return 'р';
+            case 'r': return 'р';
             case 't': return 'т';
             case 'u': return 'у';
             case 'x': return 'х';
+            case 'y': return 'у';
+            case 'z': return 'з';
             default: return c;
         }
     }

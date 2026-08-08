@@ -115,6 +115,16 @@ public class CategoriesViewModel extends AndroidViewModel {
         disposables.add(disposable);
     }
 
+    public void cleanJunk() {
+        Disposable disposable = categoryRepository.cleanJunk()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        count -> message.setValue("Удалено мусорных категорий: " + count),
+                        throwable -> message.setValue("Не удалось очистить мусор"));
+        disposables.add(disposable);
+    }
+
     @Override
     protected void onCleared() {
         disposables.clear();

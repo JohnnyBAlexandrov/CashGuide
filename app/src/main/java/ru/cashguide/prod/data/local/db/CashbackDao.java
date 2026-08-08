@@ -25,6 +25,9 @@ public interface CashbackDao {
     @Query("DELETE FROM cashback_categories WHERE cardId = :cardId AND month = :month AND year = :year")
     void deleteForCardAndMonth(long cardId, int month, int year);
 
+    @Query("DELETE FROM cashback_categories WHERE category IN (:names)")
+    int deleteByCategory(List<String> names);
+
     @Query("SELECT * FROM cashback_categories WHERE cardId = :cardId AND month = :month AND year = :year ORDER BY category")
     Flowable<List<CashbackCategory>> observeForCardAndMonth(long cardId, int month, int year);
 
@@ -33,6 +36,12 @@ public interface CashbackDao {
 
     @Query("SELECT * FROM cashback_categories WHERE month = :month AND year = :year")
     List<CashbackCategory> getAllForMonth(int month, int year);
+
+    @Query("SELECT * FROM cashback_categories ORDER BY year, month")
+    Flowable<List<CashbackCategory>> observeAll();
+
+    @Query("SELECT * FROM cashback_categories")
+    List<CashbackCategory> getAll();
 
     @Query("SELECT * FROM cashback_categories WHERE cardId = :cardId AND month = :month AND year = :year ORDER BY category")
     List<CashbackCategory> getForCardAndMonthSync(long cardId, int month, int year);

@@ -4,7 +4,9 @@
 
     <!-- Main -->
     <string name="main_title">КэшГид</string>
+    <string name="home_title">Главная</string>
     <string name="action_search">Поиск карты</string>
+    <string name="best_cashback_title">Лучший Кэшбэк</string>
     <string name="action_history">История</string>
     <string name="add_card">Добавить карту</string>
     <string name="empty_cards">Пока нет карт.\nНажмите «+», чтобы добавить первую карту.</string>
@@ -59,6 +61,7 @@
     <string name="apply_filters">Применить фильтры</string>
     <string name="reset_filters">Сбросить</string>
     <string name="add_transaction">Добавить операцию</string>
+    <string name="history_cashback_earned">Кэшбэк: %1$s</string>
 
     <!-- Transaction edit -->
     <string name="transaction_new_title">Новая операция</string>
@@ -87,6 +90,8 @@
     <string name="add_category">Добавить категорию</string>
     <string name="rename">Переименовать</string>
     <string name="delete_category_message">Удалить категорию? Категория исчезнет из настроек кэшбэка всех карт.</string>
+    <string name="clean_junk">Очистить мусор</string>
+    <string name="clean_junk_confirm">Будут удалены категории с латиницей (искажённые распознаванием OCR) из каталога и из настроек кэшбэка всех карт. Продолжить?</string>
 
     <!-- Bank directory -->
     <string name="bank_directory_title">Справочник банков</string>
@@ -108,5 +113,7 @@
     <string name="scan_screenshot">Распознать по скриншоту</string>
     <string name="scan_applied_categories">Распознано: заполнено значений — %1$d</string>
     <string name="scan_nothing_found">Не удалось найти категории с процентами на скриншоте</string>
+    <string name="scan_new_categories_added">Добавлены в раздел «Категории»: %1$s</string>
+    <string name="scan_unrecognized_hint">Не распознано: %1$s. Добавьте их вручную в раздел «Категории» для корректного распознавания</string>
     <string name="all_categories_added">Все категории уже добавлены</string>
 </resources>

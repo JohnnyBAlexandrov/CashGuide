@@ -28,6 +28,10 @@ public class CashbackRepository {
         return cashbackDao.observeForMonth(month, year);
     }
 
+    public Flowable<List<CashbackCategory>> observeAll() {
+        return cashbackDao.observeAll();
+    }
+
     public List<CashbackCategory> getAllForMonth(int month, int year) {
         return cashbackDao.getAllForMonth(month, year);
     }

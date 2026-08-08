@@ -71,6 +71,14 @@ public class CategoriesFragment extends Fragment {
             etCategoryName.setText("");
         });
 
+        MaterialButton btnCleanJunk = view.findViewById(R.id.btnCleanJunk);
+        btnCleanJunk.setOnClickListener(v -> new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.clean_junk)
+                .setMessage(R.string.clean_junk_confirm)
+                .setPositiveButton(R.string.delete, (d, w) -> viewModel.cleanJunk())
+                .setNegativeButton(R.string.cancel, null)
+                .show());
+
         viewModel.getCategories().observe(getViewLifecycleOwner(), adapter::submitList);
         viewModel.getMessage().observe(getViewLifecycleOwner(),
                 msg -> Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show());

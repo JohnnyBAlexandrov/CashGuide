@@ -59,6 +59,26 @@
             app:iconSize="18dp"
             app:iconTint="@color/colorPrimary" />
 
+        <TextView
+            android:id="@+id/tvScanInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            android:textColor="@color/muted"
+            android:textSize="13sp"
+            tools:text="Добавлены в раздел «Категории»: Автоуслуги" />
+
+        <TextView
+            android:id="@+id/tvScanUnrecognized"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            android:textColor="@color/expense"
+            android:textSize="13sp"
+            tools:text="Не распознано: IMeTCKIM MMp. Добавьте их вручную в раздел «Категории» для корректного распознавания" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCopy"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"

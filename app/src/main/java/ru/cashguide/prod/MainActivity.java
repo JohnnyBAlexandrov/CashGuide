@@ -6,20 +6,21 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import com.yandex.mobile.ads.banner.BannerAdView;
@@ -56,8 +57,22 @@ public class MainActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
         if (navHostFragment != null) {
+            NavController navController = navHostFragment.getNavController();
+            DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
             NavigationView navView = findViewById(R.id.nav_view);
-            NavigationUI.setupWithNavController(navView, navHostFragment.getNavController());
+            NavigationUI.setupWithNavController(navView, navController);
+            navView.setNavigationItemSelectedListener(item -> {
+                NavOptions options = new NavOptions.Builder()
+                        .setPopUpTo(navController.getGraph().getStartDestination(), true)
+                        .setLaunchSingleTop(true)
+                        .build();
+                navController.navigate(item.getItemId(), null, options);
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            });
+
+            BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+            NavigationUI.setupWithNavController(bottomNav, navController);
 
             TextView navVersion = findViewById(R.id.navVersion);
             navVersion.setText(getString(R.string.app_version, BuildConfig.VERSION_NAME));
@@ -73,16 +88,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
-
-        View content = findViewById(android.R.id.content);
-        ViewCompat.setOnApplyWindowInsetsListener(content, (v, insets) -> {
-            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            if (bars.top > 0 || bars.bottom > 0) {
-                v.setPadding(0, bars.top, 0, bars.bottom);
-                return WindowInsetsCompat.CONSUMED;
-            }
-            return insets;
-        });
 
         WindowInsetsControllerCompat controller =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());

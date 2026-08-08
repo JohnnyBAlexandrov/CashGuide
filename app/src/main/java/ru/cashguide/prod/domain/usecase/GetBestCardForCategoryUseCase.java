@@ -12,6 +12,7 @@ import ru.cashguide.prod.data.local.db.CashbackCategory;
 import ru.cashguide.prod.data.repository.CardRepository;
 import ru.cashguide.prod.data.repository.CashbackRepository;
 import ru.cashguide.prod.domain.model.CardCashbackResult;
+import ru.cashguide.prod.domain.model.CashbackCalculator;
 
 /**
  * Ищет лучшую карту для покупки по категории и сумме.
@@ -57,10 +58,7 @@ public class GetBestCardForCategoryUseCase {
         if (setting == null || setting.percent <= 0.0) {
             return 0.0;
         }
-        double limit = card.monthlyCashbackLimit == null ? 0.0 : card.monthlyCashbackLimit.doubleValue();
-        if (setting.monthlyLimit != null && setting.monthlyLimit.doubleValue() > 0.0) {
-            limit = setting.monthlyLimit.doubleValue();
-        }
+        double limit = CashbackCalculator.monthlyLimit(card, setting);
         if (limit <= 0.0) {
             return amount * setting.percent / 100.0;
         }

@@ -20,6 +20,12 @@
             app:defaultNavHost="true"
             app:navGraph="@navigation/nav_graph" />
 
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:menu="@menu/menu_bottom_nav" />
+
         <com.yandex.mobile.ads.banner.BannerAdView
             android:id="@+id/bannerView"
             android:layout_width="match_parent"
@@ -31,6 +37,7 @@
         android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@color/colorSurface"
         android:orientation="vertical">
 
         <com.google.android.material.navigation.NavigationView

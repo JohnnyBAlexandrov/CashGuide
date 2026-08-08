@@ -17,23 +17,24 @@ import java.util.Map;
 import ru.cashguide.prod.R;
 import ru.cashguide.prod.data.local.db.Card;
 import ru.cashguide.prod.data.local.db.Transaction;
+import ru.cashguide.prod.domain.model.TransactionWithCashback;
 import ru.cashguide.prod.util.Formatting;
 
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.ViewHolder> {
 
     public interface Listener {
-        void onTransactionLongClick(Transaction transaction);
+        void onTransactionLongClick(TransactionWithCashback item);
     }
 
     private final Listener listener;
-    private final List<Transaction> items = new ArrayList<>();
+    private final List<TransactionWithCashback> items = new ArrayList<>();
     private Map<Long, Card> cards = new HashMap<>();
 
     public TransactionAdapter(Listener listener) {
         this.listener = listener;
     }
 
-    public void submitList(List<Transaction> newItems) {
+    public void submitList(List<TransactionWithCashback> newItems) {
         items.clear();
         if (newItems != null) {
             items.addAll(newItems);
@@ -62,7 +63,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Transaction transaction = items.get(position);
+        TransactionWithCashback item = items.get(position);
+        Transaction transaction = item.transaction;
         boolean isExpense = Transaction.TYPE_EXPENSE.equals(transaction.type);
         Card card = cards.get(transaction.cardId);
         String currency = (card != null && card.currency != null) ? card.currency : "RUB";
@@ -87,9 +89,19 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
                 holder.tvAmount.getContext(),
                 isExpense ? R.color.expense : R.color.income));
 
+        boolean hasCashback = isExpense && item.earnedCashback > 0.0;
+        if (hasCashback) {
+            holder.tvCashback.setText(holder.tvCashback.getContext().getString(
+                    R.string.history_cashback_earned,
+                    Formatting.formatMoney(item.earnedCashback, currency)));
+            holder.tvCashback.setVisibility(View.VISIBLE);
+        } else {
+            holder.tvCashback.setVisibility(View.GONE);
+        }
+
         holder.itemView.setOnLongClickListener(v -> {
             if (listener != null) {
-                listener.onTransactionLongClick(transaction);
+                listener.onTransactionLongClick(item);
             }
             return true;
         });
@@ -107,6 +119,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         final TextView tvCardAndDate;
         final TextView tvNote;
         final TextView tvAmount;
+        final TextView tvCashback;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -115,6 +128,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             tvCardAndDate = itemView.findViewById(R.id.tvCardAndDate);
             tvNote = itemView.findViewById(R.id.tvNote);
             tvAmount = itemView.findViewById(R.id.tvAmount);
+            tvCashback = itemView.findViewById(R.id.tvCashback);
         }
     }
 }
