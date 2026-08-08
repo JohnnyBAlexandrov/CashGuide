@@ -4,8 +4,8 @@ import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
 @Database(
-        entities = {Card.class, CashbackCategory.class, Transaction.class},
-        version = 1,
+        entities = {Card.class, CashbackCategory.class, Transaction.class, Category.class, Bank.class},
+        version = 3,
         exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -14,4 +14,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract CashbackDao cashbackDao();
 
     public abstract TransactionDao transactionDao();
+
+    public abstract CategoryDao categoryDao();
+
+    public abstract BankDao bankDao();
 }

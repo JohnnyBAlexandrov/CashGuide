@@ -33,7 +33,6 @@ import ru.cashguide.prod.data.local.db.Card;
 import ru.cashguide.prod.data.local.db.Transaction;
 import ru.cashguide.prod.presentation.adapter.TransactionAdapter;
 import ru.cashguide.prod.presentation.viewmodel.HistoryViewModel;
-import ru.cashguide.prod.util.CategoryCatalog;
 import ru.cashguide.prod.util.Formatting;
 
 public class HistoryFragment extends Fragment {
@@ -71,7 +70,7 @@ public class HistoryFragment extends Fragment {
         Spinner spCardFilter = view.findViewById(R.id.spCardFilter);
         AutoCompleteTextView actCategory = view.findViewById(R.id.actCategoryFilter);
         actCategory.setAdapter(new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_list_item_1, CategoryCatalog.ALL));
+                android.R.layout.simple_list_item_1, new ArrayList<>()));
 
         btnFrom = view.findViewById(R.id.btnFrom);
         btnTo = view.findViewById(R.id.btnTo);
@@ -124,6 +123,13 @@ public class HistoryFragment extends Fragment {
             adapter.submitList(list);
             boolean empty = list == null || list.isEmpty();
             view.findViewById(R.id.emptyView).setVisibility(empty ? View.VISIBLE : View.GONE);
+        });
+        viewModel.getCategories().observe(getViewLifecycleOwner(), names -> {
+            if (names == null) {
+                return;
+            }
+            actCategory.setAdapter(new ArrayAdapter<>(requireContext(),
+                    android.R.layout.simple_list_item_1, names));
         });
         viewModel.getMessage().observe(getViewLifecycleOwner(),
                 msg -> Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show());

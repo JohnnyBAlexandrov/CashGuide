@@ -2,11 +2,16 @@ package ru.cashguide.prod.di;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.room.Room;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import ru.cashguide.prod.data.local.db.AppDatabase;
+import ru.cashguide.prod.data.repository.BankRepository;
 import ru.cashguide.prod.data.repository.CardRepository;
 import ru.cashguide.prod.data.repository.CashbackRepository;
+import ru.cashguide.prod.data.repository.CategoryRepository;
 import ru.cashguide.prod.data.repository.TransactionRepository;
 
 /**
@@ -18,9 +23,37 @@ public final class AppContainer {
     private static CardRepository cardRepository;
     private static CashbackRepository cashbackRepository;
     private static TransactionRepository transactionRepository;
+    private static CategoryRepository categoryRepository;
+    private static BankRepository bankRepository;
 
     private AppContainer() {
     }
+
+    private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS `categories` (" +
+                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "`name` TEXT NOT NULL, " +
+                    "`sortOrder` INTEGER NOT NULL, " +
+                    "`isCustom` INTEGER NOT NULL)");
+            db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_categories_name` ON `categories` (`name`)");
+        }
+    };
+
+    private static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS `banks` (" +
+                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "`name` TEXT NOT NULL, " +
+                    "`slug` TEXT NOT NULL, " +
+                    "`isCustom` INTEGER NOT NULL, " +
+                    "`sortOrder` INTEGER NOT NULL)");
+            db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_banks_name` ON `banks` (`name`)");
+            db.execSQL("ALTER TABLE `cashback_categories` ADD COLUMN `monthlyLimit` REAL");
+        }
+    };
 
     public static synchronized AppDatabase getDatabase(Context context) {
         if (database == null) {
@@ -28,7 +61,7 @@ public final class AppContainer {
                     context.getApplicationContext(),
                     AppDatabase.class,
                     "cashguide.db")
-                    .fallbackToDestructiveMigration()
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build();
         }
         return database;
@@ -53,5 +86,19 @@ public final class AppContainer {
             transactionRepository = new TransactionRepository(getDatabase(context));
         }
         return transactionRepository;
+    }
+
+    public static synchronized CategoryRepository getCategoryRepository(Context context) {
+        if (categoryRepository == null) {
+            categoryRepository = new CategoryRepository(getDatabase(context));
+        }
+        return categoryRepository;
+    }
+
+    public static synchronized BankRepository getBankRepository(Context context) {
+        if (bankRepository == null) {
+            bankRepository = new BankRepository(getDatabase(context));
+        }
+        return bankRepository;
     }
 }

@@ -1,6 +1,7 @@
 package ru.cashguide.prod.presentation.fragment;
 
 import android.app.DatePickerDialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,9 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -30,19 +34,24 @@ import org.threeten.bp.ZoneId;
 import ru.cashguide.prod.R;
 import ru.cashguide.prod.data.local.db.Card;
 import ru.cashguide.prod.data.local.db.Transaction;
+import ru.cashguide.prod.data.ocr.TextRecognizerWrapper;
+import ru.cashguide.prod.domain.parse.CashbackScreenshotParser;
 import ru.cashguide.prod.presentation.viewmodel.TransactionEditViewModel;
-import ru.cashguide.prod.util.CategoryCatalog;
 import ru.cashguide.prod.util.Formatting;
 
 public class TransactionEditFragment extends Fragment {
 
     private TransactionEditViewModel viewModel;
     private final List<Card> cardHolder = new ArrayList<>();
+    private final List<String> knownCategories = new ArrayList<>();
     private long selectedDateMillis = 0L;
 
     private Spinner spCard;
     private AutoCompleteTextView actCategory;
     private MaterialButton btnDate;
+
+    private final ActivityResultLauncher<PickVisualMediaRequest> pickScreenshot =
+            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), this::onScreenshotPicked);
 
     @Nullable
     @Override
@@ -73,18 +82,23 @@ public class TransactionEditFragment extends Fragment {
         spCard = view.findViewById(R.id.spCard);
         actCategory = view.findViewById(R.id.actCategory);
         actCategory.setAdapter(new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_list_item_1, CategoryCatalog.ALL));
+                android.R.layout.simple_list_item_1, new ArrayList<>()));
 
         RadioGroup rgType = view.findViewById(R.id.rgType);
         TextInputEditText etAmount = view.findViewById(R.id.etAmount);
         TextInputEditText etNote = view.findViewById(R.id.etNote);
         btnDate = view.findViewById(R.id.btnDate);
+        MaterialButton btnScan = view.findViewById(R.id.btnScan);
         MaterialButton btnSave = view.findViewById(R.id.btnSave);
 
         selectedDateMillis = System.currentTimeMillis();
         updateDateLabel();
 
         btnDate.setOnClickListener(v -> pickDate());
+        btnScan.setOnClickListener(v -> pickScreenshot.launch(
+                new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build()));
         btnSave.setOnClickListener(v -> {
             int position = spCard.getSelectedItemPosition();
             Card selectedCard = (position >= 0 && position < cardHolder.size())
@@ -118,6 +132,16 @@ public class TransactionEditFragment extends Fragment {
                     android.R.layout.simple_spinner_dropdown_item, names));
         });
 
+        viewModel.getCategories().observe(getViewLifecycleOwner(), names -> {
+            if (names == null) {
+                return;
+            }
+            knownCategories.clear();
+            knownCategories.addAll(names);
+            actCategory.setAdapter(new ArrayAdapter<>(requireContext(),
+                    android.R.layout.simple_list_item_1, names));
+        });
+
         viewModel.getTransaction().observe(getViewLifecycleOwner(), transaction -> {
             if (transaction == null) {
                 return;
@@ -142,11 +166,69 @@ public class TransactionEditFragment extends Fragment {
 
         viewModel.getMessage().observe(getViewLifecycleOwner(),
                 msg -> Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show());
+        viewModel.getScanResult().observe(getViewLifecycleOwner(), result -> {
+            if (result == null) {
+                return;
+            }
+            if (result.amount > 0) {
+                etAmount.setText(Formatting.decimal(result.amount));
+            }
+            if (result.category != null && !result.category.isEmpty()) {
+                actCategory.setText(result.category, false);
+            }
+            if (result.dateMillis > 0) {
+                selectedDateMillis = result.dateMillis;
+                updateDateLabel();
+            }
+            String hint = "Распознано:";
+            if (result.amount > 0) {
+                hint += " сумма";
+            }
+            if (result.category != null && !result.category.isEmpty()) {
+                hint += ", категория";
+            }
+            if (result.dateMillis > 0) {
+                hint += ", дата";
+            }
+            Toast.makeText(requireContext(), hint + ". Проверьте данные перед сохранением.",
+                    Toast.LENGTH_LONG).show();
+        });
         viewModel.getCloseScreen().observe(getViewLifecycleOwner(), close -> {
             if (close != null && close) {
                 NavHostFragment.findNavController(TransactionEditFragment.this).popBackStack();
             }
         });
+
+        boolean scanOnStart = getArguments() != null
+                && getArguments().getBoolean("scanOnStart", false);
+        if (scanOnStart) {
+            btnScan.performClick();
+        }
+    }
+
+    private void onScreenshotPicked(Uri uri) {
+        if (uri == null) {
+            return;
+        }
+        TextRecognizerWrapper recognizer = new TextRecognizerWrapper();
+        recognizer.recognize(requireContext(), uri)
+                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
+                .subscribe(
+                        text -> {
+                            CashbackScreenshotParser.ParsedScreenshot parsed =
+                                    new CashbackScreenshotParser(knownCategories).parse(text);
+                            long dateMillis = 0L;
+                            if (parsed.date != null) {
+                                dateMillis = parsed.date
+                                        .atStartOfDay(org.threeten.bp.ZoneId.systemDefault())
+                                        .toInstant()
+                                        .toEpochMilli();
+                            }
+                            viewModel.reportScan(parsed.amount, parsed.category, dateMillis);
+                        },
+                        throwable -> Toast.makeText(requireContext(),
+                                "Не удалось распознать текст", Toast.LENGTH_SHORT).show());
     }
 
     private void selectCard(long cardId) {

@@ -21,10 +21,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
+
 import ru.cashguide.prod.R;
 import ru.cashguide.prod.presentation.adapter.BestCardAdapter;
 import ru.cashguide.prod.presentation.viewmodel.SearchViewModel;
-import ru.cashguide.prod.util.CategoryCatalog;
 import ru.cashguide.prod.util.Formatting;
 
 public class SearchFragment extends Fragment {
@@ -43,14 +44,14 @@ public class SearchFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(SearchViewModel.class);
+        viewModel.loadCategories();
 
         MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
         NavigationUI.setupWithNavController(toolbar, NavHostFragment.findNavController(this));
 
         AutoCompleteTextView actCategory = view.findViewById(R.id.actCategory);
         actCategory.setAdapter(new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_list_item_1, CategoryCatalog.ALL));
-        actCategory.setText(CategoryCatalog.ALL.get(0), false);
+                android.R.layout.simple_list_item_1, new ArrayList<>()));
 
         TextInputEditText etAmount = view.findViewById(R.id.etAmount);
         Button btnSearch = view.findViewById(R.id.btnSearch);
@@ -86,6 +87,13 @@ public class SearchFragment extends Fragment {
             adapter.submitList(list);
             boolean empty = list == null || list.isEmpty();
             view.findViewById(R.id.emptyView).setVisibility(empty ? View.VISIBLE : View.GONE);
+        });
+        viewModel.getCategories().observe(getViewLifecycleOwner(), names -> {
+            if (names == null || names.isEmpty()) {
+                return;
+            }
+            actCategory.setAdapter(new ArrayAdapter<>(requireContext(),
+                    android.R.layout.simple_list_item_1, names));
         });
         viewModel.getMessage().observe(getViewLifecycleOwner(),
                 msg -> Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show());

@@ -39,5 +39,41 @@
                 android:inputType="numberDecimal"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="108dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:hint="@string/cashback_limit">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etLimit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:inputType="numberDecimal"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/btnEditCategory"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/rename"
+            android:src="@drawable/ic_edit"
+            app:tint="@color/colorPrimary" />
+
+        <ImageButton
+            android:id="@+id/btnDeleteCategory"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/delete"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/expense" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -17,6 +17,7 @@ import io.reactivex.schedulers.Schedulers;
 import ru.cashguide.prod.data.local.db.Card;
 import ru.cashguide.prod.data.local.db.Transaction;
 import ru.cashguide.prod.data.repository.CardRepository;
+import ru.cashguide.prod.data.repository.CategoryRepository;
 import ru.cashguide.prod.data.repository.TransactionRepository;
 import ru.cashguide.prod.di.AppContainer;
 import ru.cashguide.prod.presentation.util.SingleLiveEvent;
@@ -25,10 +26,12 @@ public class HistoryViewModel extends AndroidViewModel {
 
     private final TransactionRepository transactionRepository;
     private final CardRepository cardRepository;
+    private final CategoryRepository categoryRepository;
     private final CompositeDisposable disposables = new CompositeDisposable();
 
     private final MutableLiveData<List<Transaction>> transactions = new MutableLiveData<>();
     private final MutableLiveData<List<Card>> cards = new MutableLiveData<>();
+    private final MutableLiveData<List<String>> categories = new MutableLiveData<>();
     private final SingleLiveEvent<String> message = new SingleLiveEvent<>();
 
     private List<Transaction> cachedAll = new ArrayList<>();
@@ -41,6 +44,7 @@ public class HistoryViewModel extends AndroidViewModel {
         super(application);
         transactionRepository = AppContainer.getTransactionRepository(application);
         cardRepository = AppContainer.getCardRepository(application);
+        categoryRepository = AppContainer.getCategoryRepository(application);
     }
 
     public LiveData<List<Transaction>> getTransactions() {
@@ -49,6 +53,10 @@ public class HistoryViewModel extends AndroidViewModel {
 
     public LiveData<List<Card>> getCards() {
         return cards;
+    }
+
+    public LiveData<List<String>> getCategories() {
+        return categories;
     }
 
     public LiveData<String> getMessage() {
@@ -75,6 +83,22 @@ public class HistoryViewModel extends AndroidViewModel {
                         throwable -> {
                         });
         disposables.add(cardDisposable);
+
+        Disposable catDisposable = categoryRepository.observeAll()
+                .map(list -> {
+                    List<String> names = new ArrayList<>();
+                    for (ru.cashguide.prod.data.local.db.Category category : list) {
+                        names.add(category.name);
+                    }
+                    return names;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        categories::setValue,
+                        throwable -> {
+                        });
+        disposables.add(catDisposable);
     }
 
     public void setFilters(Long cardId, String category, Long from, Long to) {

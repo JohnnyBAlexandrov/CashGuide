@@ -36,6 +36,30 @@
             tools:text="Настройки на август 2026" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddCategory"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/add_category"
+            app:icon="@drawable/ic_add"
+            app:iconGravity="textStart"
+            app:iconSize="18dp"
+            app:iconTint="@color/colorPrimary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnScan"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/scan_screenshot"
+            app:icon="@drawable/ic_search"
+            app:iconGravity="textStart"
+            app:iconSize="18dp"
+            app:iconTint="@color/colorPrimary" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCopy"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"

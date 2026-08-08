@@ -12,6 +12,7 @@ import com.yandex.mobile.ads.common.AdError;
 import com.yandex.mobile.ads.common.AdRequest;
 import com.yandex.mobile.ads.common.AdRequestError;
 import com.yandex.mobile.ads.common.ImpressionData;
+import com.yandex.mobile.ads.common.InitializationListener;
 import com.yandex.mobile.ads.common.YandexAds;
 import com.yandex.mobile.ads.interstitial.InterstitialAd;
 import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener;
@@ -34,7 +35,11 @@ public final class AdsHelper {
     }
 
     public static void init(Context context) {
-        YandexAds.initialize(context, null);
+        YandexAds.initialize(context, new InitializationListener() {
+            @Override
+            public void onInitializationCompleted() {
+            }
+        });
         YandexAds.enableLogging(BuildConfig.DEBUG);
     }
 

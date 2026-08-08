@@ -14,7 +14,7 @@ public class SaveCashbackSettingsUseCase {
         this.cashbackRepository = cashbackRepository;
     }
 
-    public Completable execute(List<CashbackCategory> items) {
-        return cashbackRepository.saveSettings(items);
+    public Completable execute(long cardId, int month, int year, List<CashbackCategory> items) {
+        return cashbackRepository.saveSettings(cardId, month, year, items);
     }
 }

@@ -33,6 +33,7 @@
     <string name="cashback_for_month">Настройки на %1$s</string>
     <string name="copy_previous_month">Скопировать из прошлого месяца</string>
     <string name="cashback_percent">Кэшбэк, %</string>
+    <string name="cashback_limit">Лимит, ₽</string>
     <string name="cashback_spent">Потрачено</string>
     <string name="save_settings">Сохранить настройки</string>
 
@@ -78,4 +79,27 @@
     <string name="update_need_install_permission">Чтобы установить обновление, разрешите приложению устанавливать неизвестные приложения.</string>
     <string name="update_goto_settings">Открыть настройки</string>
     <string name="app_version">Версия %1$s</string>
+
+    <!-- Categories -->
+    <string name="categories_title">Категории</string>
+    <string name="action_categories">Категории</string>
+    <string name="add_category_hint">Новая категория</string>
+    <string name="add_category">Добавить категорию</string>
+    <string name="rename">Переименовать</string>
+    <string name="delete_category_message">Удалить категорию? Категория исчезнет из настроек кэшбэка всех карт.</string>
+
+    <!-- Bank directory -->
+    <string name="bank_directory_title">Справочник банков</string>
+    <string name="action_bank_directory">Банки</string>
+    <string name="bank_search_hint">Поиск банка</string>
+    <string name="add_bank_hint">Название банка</string>
+    <string name="add_bank">Добавить</string>
+    <string name="delete_bank_message">Удалить банк из справочника?</string>
+    <string name="delete_cashback_category_message">Удалить эту категорию из настроек кэшбэка?</string>
+
+    <!-- Scan -->
+    <string name="scan_screenshot">Распознать по скриншоту</string>
+    <string name="scan_applied_categories">Распознано: заполнено значений — %1$d</string>
+    <string name="scan_nothing_found">Не удалось найти категории с процентами на скриншоте</string>
+    <string name="all_categories_added">Все категории уже добавлены</string>
 </resources>

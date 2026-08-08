@@ -36,20 +36,13 @@ public class CashbackRepository {
         return cashbackDao.getForCardAndMonthSync(cardId, month, year);
     }
 
-    public Completable saveSettings(List<CashbackCategory> items) {
-        return Completable.fromAction(() -> {
-            if (items == null || items.isEmpty()) {
-                return;
-            }
-            CashbackCategory first = items.get(0);
-            long cardId = first.cardId;
-            int month = first.month;
-            int year = first.year;
-            database.runInTransaction(() -> {
-                cashbackDao.deleteForCardAndMonth(cardId, month, year);
+    public Completable saveSettings(long cardId, int month, int year, List<CashbackCategory> items) {
+        return Completable.fromAction(() -> database.runInTransaction(() -> {
+            cashbackDao.deleteForCardAndMonth(cardId, month, year);
+            if (items != null && !items.isEmpty()) {
                 cashbackDao.insertAll(items);
-            });
-        });
+            }
+        }));
     }
 
     public Completable copyFromPreviousMonth(long cardId, YearMonth target) {
@@ -66,6 +59,7 @@ public class CashbackRepository {
                 copy.cardId = cardId;
                 copy.category = source.category;
                 copy.percent = source.percent;
+                copy.monthlyLimit = source.monthlyLimit;
                 copy.spentThisMonth = 0;
                 copy.month = target.getMonthValue();
                 copy.year = target.getYear();

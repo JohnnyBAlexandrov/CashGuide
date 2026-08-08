@@ -57,10 +57,14 @@ public class GetBestCardForCategoryUseCase {
         if (setting == null || setting.percent <= 0.0) {
             return 0.0;
         }
-        if (card.monthlyCashbackLimit == null) {
+        double limit = card.monthlyCashbackLimit == null ? 0.0 : card.monthlyCashbackLimit.doubleValue();
+        if (setting.monthlyLimit != null && setting.monthlyLimit.doubleValue() > 0.0) {
+            limit = setting.monthlyLimit.doubleValue();
+        }
+        if (limit <= 0.0) {
             return amount * setting.percent / 100.0;
         }
-        double remaining = card.monthlyCashbackLimit - setting.spentThisMonth;
+        double remaining = limit - setting.spentThisMonth;
         if (remaining <= 0.0) {
             return 0.0;
         }

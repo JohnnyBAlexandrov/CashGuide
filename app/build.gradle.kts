@@ -28,8 +28,8 @@ android {
         applicationId = "ru.cashguide.prod"
         minSdk = 24
         targetSdk = 36
-        versionCode = 71
-        versionName = "1.0.71"
+        versionCode = 74
+        versionName = "1.0.74"
 
         buildConfigField("String", "UPDATE_URL", "\"http://185.26.115.32:8088/cashguide/api/getversion.php\"")
         buildConfigField("String", "APK_URL", "\"http://185.26.115.32:8088/cashguide/cashguide.apk\"")
@@ -77,6 +77,8 @@ dependencies {
 
     implementation(libs.threetenabp)
     implementation(libs.yandex.ads)
+    implementation(libs.activity)
+    implementation(libs.mlkit.text.recognition)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)

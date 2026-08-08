@@ -12,7 +12,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+
+import java.util.List;
+
+import ru.cashguide.prod.data.local.db.Bank;
 import ru.cashguide.prod.data.local.db.Card;
+import ru.cashguide.prod.data.repository.BankRepository;
 import ru.cashguide.prod.data.repository.CardRepository;
 import ru.cashguide.prod.di.AppContainer;
 import ru.cashguide.prod.presentation.util.SingleLiveEvent;
@@ -21,9 +26,11 @@ import ru.cashguide.prod.util.Formatting;
 public class CardDetailViewModel extends AndroidViewModel {
 
     private final CardRepository cardRepository;
+    private final BankRepository bankRepository;
     private final CompositeDisposable disposables = new CompositeDisposable();
 
     private final MutableLiveData<Card> card = new MutableLiveData<>();
+    private final MutableLiveData<List<Bank>> banks = new MutableLiveData<>();
     private final SingleLiveEvent<String> message = new SingleLiveEvent<>();
     private final SingleLiveEvent<Boolean> closeScreen = new SingleLiveEvent<>();
 
@@ -32,10 +39,15 @@ public class CardDetailViewModel extends AndroidViewModel {
     public CardDetailViewModel(@NonNull Application application) {
         super(application);
         cardRepository = AppContainer.getCardRepository(application);
+        bankRepository = AppContainer.getBankRepository(application);
     }
 
     public LiveData<Card> getCard() {
         return card;
+    }
+
+    public LiveData<List<Bank>> getBanks() {
+        return banks;
     }
 
     public LiveData<String> getMessage() {
@@ -48,6 +60,14 @@ public class CardDetailViewModel extends AndroidViewModel {
 
     public void init(long id) {
         this.cardId = id;
+        Disposable banksDisposable = bankRepository.observeAll()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        banks::setValue,
+                        throwable -> {
+                        });
+        disposables.add(banksDisposable);
         if (id > 0) {
             Disposable disposable = cardRepository.getCard(id)
                     .subscribeOn(Schedulers.io())

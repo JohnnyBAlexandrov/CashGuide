@@ -31,6 +31,9 @@ public class CashbackCategory {
 
     public double spentThisMonth;
 
+    /** Месячный лимит начисляемого кэшбэка для этой категории (nullable = нет лимита). */
+    public Double monthlyLimit;
+
     public int month;
 
     public int year;

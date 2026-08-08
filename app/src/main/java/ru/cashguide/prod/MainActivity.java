@@ -39,11 +39,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AdsHelper.init(this);
-
-        BannerAdView bannerView = findViewById(R.id.bannerView);
-        AdsHelper.loadBanner(bannerView, this);
-        AdsHelper.loadInterstitial(this);
+        // ================= РЕКЛАМА (ОТКЛЮЧЕНА) =================
+        // Чтобы включить рекламу обратно — удали/раскомментируй 3 строки ниже,
+        // и блок про showInterstitialIfReady далее. Не передавай null в initialize.
+        // AdsHelper.init(this);
+        //
+        // BannerAdView bannerView = findViewById(R.id.bannerView);
+        // AdsHelper.loadBanner(bannerView, this);
+        // AdsHelper.loadInterstitial(this);
+        // =========================================================
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
@@ -52,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
                     (controller, destination, arguments) -> {
                         int id = destination.getId();
                         if (id == R.id.searchFragment || id == R.id.historyFragment) {
-                            AdsHelper.showInterstitialIfReady(MainActivity.this);
+                            // РЕКЛАМА: раскомментируй при включении рекламы
+                            // AdsHelper.showInterstitialIfReady(MainActivity.this);
                         }
                     });
         }
@@ -72,7 +77,10 @@ public class MainActivity extends AppCompatActivity {
         WindowInsetsControllerCompat controller =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         if (controller != null) {
-            controller.setAppearanceLightStatusBars(true);
+            boolean isNight = (getResources().getConfiguration().uiMode
+                    & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
+                    == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+            controller.setAppearanceLightStatusBars(!isNight);
         }
 
         checkForUpdates();

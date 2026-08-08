@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -17,10 +18,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputEditText;
 
 import ru.cashguide.prod.R;
+import ru.cashguide.prod.data.local.db.Bank;
 import ru.cashguide.prod.data.local.db.Card;
 import ru.cashguide.prod.presentation.viewmodel.CardDetailViewModel;
 import ru.cashguide.prod.util.Formatting;
@@ -53,10 +58,12 @@ public class CardDetailFragment extends Fragment {
         toolbar.setTitle(cardId > 0 ? R.string.card_edit_title : R.string.card_new_title);
         NavigationUI.setupWithNavController(toolbar, NavHostFragment.findNavController(this));
 
-        TextInputEditText etBank = view.findViewById(R.id.etBank);
         TextInputEditText etName = view.findViewById(R.id.etName);
         TextInputEditText etBalance = view.findViewById(R.id.etBalance);
         TextInputEditText etLimit = view.findViewById(R.id.etLimit);
+        AutoCompleteTextView etBank = view.findViewById(R.id.etBank);
+        etBank.setAdapter(new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_list_item_1, new ArrayList<>()));
         Spinner spCurrency = view.findViewById(R.id.spCurrency);
         Button btnSave = view.findViewById(R.id.btnSave);
         Button btnDelete = view.findViewById(R.id.btnDelete);
@@ -96,6 +103,17 @@ public class CardDetailFragment extends Fragment {
                 .setNegativeButton(R.string.cancel, null)
                 .show());
 
+        viewModel.getBanks().observe(getViewLifecycleOwner(), list -> {
+            List<String> bankNames = new ArrayList<>();
+            if (list != null) {
+                for (Bank bank : list) {
+                    bankNames.add(bank.name);
+                }
+            }
+            etBank.setAdapter(new ArrayAdapter<>(requireContext(),
+                    android.R.layout.simple_list_item_1, bankNames));
+        });
+
         viewModel.getMessage().observe(getViewLifecycleOwner(),
                 msg -> Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show());
         viewModel.getCloseScreen().observe(getViewLifecycleOwner(), close -> {
@@ -114,7 +132,7 @@ public class CardDetailFragment extends Fragment {
         }
     }
 
-    private String text(TextInputEditText editText) {
+    private String text(android.widget.EditText editText) {
         return editText.getText() == null ? "" : editText.getText().toString();
     }
 }

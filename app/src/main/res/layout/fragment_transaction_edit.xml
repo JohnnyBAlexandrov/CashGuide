@@ -96,6 +96,16 @@
                 android:layout_marginBottom="8dp"
                 android:text="@string/tx_date" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnScan"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/scan_screenshot"
+                app:icon="@drawable/ic_search"
+                app:iconGravity="textStart" />
+
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"

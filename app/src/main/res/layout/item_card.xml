@@ -26,6 +26,14 @@
                 android:layout_height="48dp"
                 android:background="@drawable/bg_circle_primary">
 
+                <ImageView
+                    android:id="@+id/ivLogo"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/action_bank_directory"
+                    android:visibility="gone" />
+
                 <TextView
                     android:id="@+id/tvAvatar"
                     android:layout_width="wrap_content"
@@ -98,7 +106,6 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/cashback_settings"
                 android:textSize="13sp"
                 app:icon="@drawable/ic_percent"
                 app:iconGravity="textStart"
@@ -110,7 +117,6 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/edit"
                 android:textSize="13sp"
                 app:icon="@drawable/ic_edit"
                 app:iconGravity="textStart"
@@ -122,7 +128,6 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/delete"
                 android:textColor="@color/expense"
                 android:textSize="13sp"
                 app:icon="@drawable/ic_delete"

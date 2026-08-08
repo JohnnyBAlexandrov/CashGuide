@@ -26,6 +26,14 @@
         <action
             android:id="@+id/action_main_to_history"
             app:destination="@id/historyFragment" />
+
+        <action
+            android:id="@+id/action_main_to_categories"
+            app:destination="@id/categoriesFragment" />
+
+        <action
+            android:id="@+id/action_main_to_bank_directory"
+            app:destination="@id/bankDirectoryFragment" />
     </fragment>
 
     <fragment
@@ -83,6 +91,23 @@
             android:name="transactionId"
             app:argType="long"
             android:defaultValue="-1L" />
+
+        <argument
+            android:name="scanOnStart"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
+
+    <fragment
+        android:id="@+id/categoriesFragment"
+        android:name="ru.cashguide.prod.presentation.fragment.CategoriesFragment"
+        android:label="@string/categories_title"
+        tools:layout="@layout/fragment_categories" />
+
+    <fragment
+        android:id="@+id/bankDirectoryFragment"
+        android:name="ru.cashguide.prod.presentation.fragment.BankDirectoryFragment"
+        android:label="@string/bank_directory_title"
+        tools:layout="@layout/fragment_bank_directory" />
 
 </navigation>

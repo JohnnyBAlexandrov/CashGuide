@@ -3,6 +3,7 @@ package ru.cashguide.prod.presentation.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import com.google.android.material.button.MaterialButton;
 import ru.cashguide.prod.R;
 import ru.cashguide.prod.data.local.db.Card;
 import ru.cashguide.prod.domain.model.CardWithCashback;
+import ru.cashguide.prod.util.BankLogo;
 import ru.cashguide.prod.util.Formatting;
 
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
@@ -58,7 +60,16 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         Card card = item.card;
 
         String bank = card.bankName;
-        holder.tvAvatar.setText(bank.isEmpty() ? "?" : bank.substring(0, 1));
+        int logoRes = BankLogo.resFor(holder.tvAvatar.getContext(), bank);
+        if (logoRes != 0) {
+            holder.ivLogo.setImageResource(logoRes);
+            holder.ivLogo.setVisibility(View.VISIBLE);
+            holder.tvAvatar.setVisibility(View.GONE);
+        } else {
+            holder.ivLogo.setVisibility(View.GONE);
+            holder.tvAvatar.setVisibility(View.VISIBLE);
+            holder.tvAvatar.setText(bank.isEmpty() ? "?" : bank.substring(0, 1));
+        }
         holder.tvBank.setText(bank);
         holder.tvName.setText(card.cardName);
         holder.tvBalance.setText(Formatting.formatMoney(card.balance, card.currency));
@@ -81,6 +92,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         final TextView tvAvatar;
+        final ImageView ivLogo;
         final TextView tvBank;
         final TextView tvName;
         final TextView tvBalance;
@@ -92,6 +104,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvAvatar = itemView.findViewById(R.id.tvAvatar);
+            ivLogo = itemView.findViewById(R.id.ivLogo);
             tvBank = itemView.findViewById(R.id.tvBank);
             tvName = itemView.findViewById(R.id.tvName);
             tvBalance = itemView.findViewById(R.id.tvBalance);

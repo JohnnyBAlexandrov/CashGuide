@@ -88,6 +88,14 @@ public class MainFragment extends Fragment {
                 NavHostFragment.findNavController(MainFragment.this).navigate(R.id.historyFragment);
                 return true;
             }
+            if (id == R.id.action_categories) {
+                NavHostFragment.findNavController(MainFragment.this).navigate(R.id.categoriesFragment);
+                return true;
+            }
+            if (id == R.id.action_bank_directory) {
+                NavHostFragment.findNavController(MainFragment.this).navigate(R.id.bankDirectoryFragment);
+                return true;
+            }
             return false;
         });
 
