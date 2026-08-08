@@ -13,8 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +24,7 @@ import java.util.ArrayList;
 import ru.cashguide.prod.R;
 import ru.cashguide.prod.presentation.adapter.BestCardAdapter;
 import ru.cashguide.prod.presentation.viewmodel.SearchViewModel;
+import ru.cashguide.prod.util.DrawerUi;
 import ru.cashguide.prod.util.Formatting;
 
 public class SearchFragment extends Fragment {
@@ -47,7 +46,7 @@ public class SearchFragment extends Fragment {
         viewModel.loadCategories();
 
         MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
-        NavigationUI.setupWithNavController(toolbar, NavHostFragment.findNavController(this));
+        DrawerUi.setupWithNavController(toolbar, this);
 
         AutoCompleteTextView actCategory = view.findViewById(R.id.actCategory);
         actCategory.setAdapter(new ArrayAdapter<>(requireContext(),

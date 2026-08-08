@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/historyFragment"
+        android:checkable="true"
+        android:icon="@drawable/ic_history"
+        android:title="@string/history_title" />
+
+    <item
+        android:id="@+id/bankDirectoryFragment"
+        android:checkable="true"
+        android:icon="@drawable/ic_bank"
+        android:title="@string/action_bank_directory" />
+
+    <item
+        android:id="@+id/categoriesFragment"
+        android:checkable="true"
+        android:icon="@drawable/ic_edit"
+        android:title="@string/action_categories" />
+
+    <item
+        android:id="@+id/newsFragment"
+        android:checkable="true"
+        android:icon="@drawable/ic_news"
+        android:title="@string/news_title" />
+
+</menu>

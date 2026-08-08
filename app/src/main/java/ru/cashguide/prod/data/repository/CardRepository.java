@@ -30,7 +30,10 @@ public class CardRepository {
     }
 
     public Completable addCard(Card card) {
-        return Completable.fromAction(() -> cardDao.insert(card));
+        return Completable.fromAction(() -> {
+            card.sortOrder = cardDao.getNextSortOrder();
+            cardDao.insert(card);
+        });
     }
 
     public Completable updateCard(Card card) {
@@ -39,5 +42,13 @@ public class CardRepository {
 
     public Completable deleteCard(Card card) {
         return Completable.fromAction(() -> cardDao.delete(card));
+    }
+
+    public Completable reorderCards(List<Card> orderedCards) {
+        return Completable.fromAction(() -> {
+            for (int i = 0; i < orderedCards.size(); i++) {
+                cardDao.updateSortOrder(orderedCards.get(i).id, i);
+            }
+        });
     }
 }

@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -17,6 +18,9 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
+
+import com.google.android.material.navigation.NavigationView;
 
 import com.yandex.mobile.ads.banner.BannerAdView;
 
@@ -52,6 +56,12 @@ public class MainActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
         if (navHostFragment != null) {
+            NavigationView navView = findViewById(R.id.nav_view);
+            NavigationUI.setupWithNavController(navView, navHostFragment.getNavController());
+
+            TextView navVersion = findViewById(R.id.navVersion);
+            navVersion.setText(getString(R.string.app_version, BuildConfig.VERSION_NAME));
+
             navHostFragment.getNavController().addOnDestinationChangedListener(
                     (controller, destination, arguments) -> {
                         int id = destination.getId();

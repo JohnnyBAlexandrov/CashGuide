@@ -98,6 +98,17 @@ public class MainViewModel extends AndroidViewModel {
         disposables.add(disposable);
     }
 
+    public void reorderCards(List<Card> cards) {
+        Disposable disposable = cardRepository.reorderCards(cards)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        () -> {
+                        },
+                        throwable -> message.setValue("Ошибка сохранения порядка карт"));
+        disposables.add(disposable);
+    }
+
     private List<CardWithCashback> buildList(List<Card> cards, List<CashbackCategory> settings) {
         Map<Long, List<CashbackCategory>> byCard = new HashMap<>();
         for (CashbackCategory setting : settings) {
@@ -106,10 +117,12 @@ public class MainViewModel extends AndroidViewModel {
         List<CardWithCashback> result = new ArrayList<>();
         for (Card card : cards) {
             double total = 0.0;
-            for (CashbackCategory setting : byCard.getOrDefault(card.id, Collections.emptyList())) {
+            List<CashbackCategory> cardSettings =
+                    byCard.getOrDefault(card.id, Collections.emptyList());
+            for (CashbackCategory setting : cardSettings) {
                 total += setting.spentThisMonth * setting.percent / 100.0;
             }
-            result.add(new CardWithCashback(card, total));
+            result.add(new CardWithCashback(card, total, cardSettings));
         }
         return result;
     }

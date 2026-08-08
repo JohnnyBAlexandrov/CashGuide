@@ -39,10 +39,12 @@ public class GetCardsWithCashbackUseCase {
         List<CardWithCashback> result = new ArrayList<>();
         for (Card card : cards) {
             double total = 0.0;
-            for (CashbackCategory setting : byCard.getOrDefault(card.id, new ArrayList<>())) {
+            List<CashbackCategory> cardSettings =
+                    byCard.getOrDefault(card.id, new ArrayList<>());
+            for (CashbackCategory setting : cardSettings) {
                 total += setting.spentThisMonth * setting.percent / 100.0;
             }
-            result.add(new CardWithCashback(card, total));
+            result.add(new CardWithCashback(card, total, cardSettings));
         }
         return result;
     }

@@ -22,4 +22,6 @@ public class Card {
     public String currency = "RUB";
 
     public Double monthlyCashbackLimit;
+
+    public int sortOrder;
 }

@@ -55,13 +55,20 @@ public final class AppContainer {
         }
     };
 
+    private static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("ALTER TABLE `cards` ADD COLUMN `sortOrder` INTEGER NOT NULL DEFAULT 0");
+        }
+    };
+
     public static synchronized AppDatabase getDatabase(Context context) {
         if (database == null) {
             database = Room.databaseBuilder(
                     context.getApplicationContext(),
                     AppDatabase.class,
                     "cashguide.db")
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build();
         }
         return database;

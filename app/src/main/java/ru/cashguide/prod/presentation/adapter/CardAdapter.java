@@ -10,11 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.android.material.button.MaterialButton;
 import ru.cashguide.prod.R;
 import ru.cashguide.prod.data.local.db.Card;
+import ru.cashguide.prod.data.local.db.CashbackCategory;
 import ru.cashguide.prod.domain.model.CardWithCashback;
 import ru.cashguide.prod.util.BankLogo;
 import ru.cashguide.prod.util.Formatting;
@@ -46,6 +48,19 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
+    public void moveItem(int fromPosition, int toPosition) {
+        Collections.swap(items, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    public List<Card> getCardsInOrder() {
+        List<Card> result = new ArrayList<>(items.size());
+        for (CardWithCashback item : items) {
+            result.add(item.card);
+        }
+        return result;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -73,15 +88,32 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         holder.tvBank.setText(bank);
         holder.tvName.setText(card.cardName);
         holder.tvBalance.setText(Formatting.formatMoney(card.balance, card.currency));
-        holder.tvCashback.setText(
-                holder.tvCashback.getContext().getString(
-                        R.string.cashback_this_month,
-                        Formatting.formatMoney(item.cashbackThisMonth, card.currency)));
+        holder.tvCashback.setText(Formatting.formatMoney(item.cashbackThisMonth, card.currency));
+        String categories = formatCategories(item.categories);
+        holder.tvCategories.setText(categories);
+        holder.tvCategories.setVisibility(categories.isEmpty() ? View.GONE : View.VISIBLE);
 
         holder.itemView.setOnClickListener(v -> listener.onCardClick(card));
         holder.btnCashback.setOnClickListener(v -> listener.onCashbackSetup(card));
         holder.btnEdit.setOnClickListener(v -> listener.onEdit(card));
         holder.btnDelete.setOnClickListener(v -> listener.onDelete(card));
+    }
+
+    private static String formatCategories(List<CashbackCategory> categories) {
+        if (categories == null || categories.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (CashbackCategory category : categories) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(category.category)
+                    .append(' ')
+                    .append(Formatting.decimal(category.percent))
+                    .append('%');
+        }
+        return sb.toString();
     }
 
     @Override
@@ -97,6 +129,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         final TextView tvName;
         final TextView tvBalance;
         final TextView tvCashback;
+        final TextView tvCategories;
         final MaterialButton btnCashback;
         final MaterialButton btnEdit;
         final MaterialButton btnDelete;
@@ -109,6 +142,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             tvName = itemView.findViewById(R.id.tvName);
             tvBalance = itemView.findViewById(R.id.tvBalance);
             tvCashback = itemView.findViewById(R.id.tvCashback);
+            tvCategories = itemView.findViewById(R.id.tvCategories);
             btnCashback = itemView.findViewById(R.id.btnCashback);
             btnEdit = itemView.findViewById(R.id.btnEdit);
             btnDelete = itemView.findViewById(R.id.btnDelete);

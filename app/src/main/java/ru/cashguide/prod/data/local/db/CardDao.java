@@ -23,10 +23,10 @@ public interface CardDao {
     @Delete
     void delete(Card card);
 
-    @Query("SELECT * FROM cards ORDER BY bankName, cardName")
+    @Query("SELECT * FROM cards ORDER BY sortOrder, bankName, cardName")
     Flowable<List<Card>> observeAll();
 
-    @Query("SELECT * FROM cards ORDER BY bankName, cardName")
+    @Query("SELECT * FROM cards ORDER BY sortOrder, bankName, cardName")
     List<Card> getAll();
 
     @Query("SELECT * FROM cards WHERE id = :id")
@@ -34,4 +34,10 @@ public interface CardDao {
 
     @Query("SELECT * FROM cards WHERE id = :id")
     Card getByIdSync(long id);
+
+    @Query("SELECT COALESCE(MAX(sortOrder), -1) + 1 FROM cards")
+    int getNextSortOrder();
+
+    @Query("UPDATE cards SET sortOrder = :sortOrder WHERE id = :id")
+    void updateSortOrder(long id, int sortOrder);
 }

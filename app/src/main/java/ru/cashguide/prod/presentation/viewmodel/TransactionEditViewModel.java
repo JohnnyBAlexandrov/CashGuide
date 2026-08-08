@@ -62,27 +62,6 @@ public class TransactionEditViewModel extends AndroidViewModel {
         return categories;
     }
 
-    /** Результат распознавания скриншота, который нужно подставить в форму. */
-    public static final class ScanResult {
-        public double amount;
-        public String category;
-        public long dateMillis;
-    }
-
-    private final MutableLiveData<ScanResult> scanResult = new MutableLiveData<>();
-
-    public LiveData<ScanResult> getScanResult() {
-        return scanResult;
-    }
-
-    public void reportScan(double amount, String category, long dateMillis) {
-        ScanResult result = new ScanResult();
-        result.amount = amount;
-        result.category = category;
-        result.dateMillis = dateMillis;
-        scanResult.setValue(result);
-    }
-
     public LiveData<String> getMessage() {
         return message;
     }
@@ -149,10 +128,6 @@ public class TransactionEditViewModel extends AndroidViewModel {
         }
         if (amount <= 0) {
             message.setValue("Сумма должна быть больше нуля");
-            return;
-        }
-        if (category == null || category.trim().isEmpty()) {
-            message.setValue("Укажите категорию");
             return;
         }
 

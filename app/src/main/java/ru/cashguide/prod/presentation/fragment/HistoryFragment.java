@@ -16,7 +16,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +32,7 @@ import ru.cashguide.prod.data.local.db.Card;
 import ru.cashguide.prod.data.local.db.Transaction;
 import ru.cashguide.prod.presentation.adapter.TransactionAdapter;
 import ru.cashguide.prod.presentation.viewmodel.HistoryViewModel;
+import ru.cashguide.prod.util.DrawerUi;
 import ru.cashguide.prod.util.Formatting;
 
 public class HistoryFragment extends Fragment {
@@ -60,7 +60,7 @@ public class HistoryFragment extends Fragment {
         viewModel.start();
 
         MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
-        NavigationUI.setupWithNavController(toolbar, NavHostFragment.findNavController(this));
+        DrawerUi.setupWithNavController(toolbar, this);
 
         RecyclerView recyclerView = view.findViewById(R.id.rvTransactions);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));

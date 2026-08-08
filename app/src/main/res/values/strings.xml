@@ -67,7 +67,7 @@
     <string name="tx_expense">Расход</string>
     <string name="tx_income">Доход</string>
     <string name="tx_amount">Сумма</string>
-    <string name="tx_category">Категория</string>
+    <string name="tx_category">Категория (необязательно)</string>
     <string name="tx_note">Заметка (необязательно)</string>
     <string name="tx_date">Дата: %1$s</string>
 
@@ -96,6 +96,13 @@
     <string name="add_bank">Добавить</string>
     <string name="delete_bank_message">Удалить банк из справочника?</string>
     <string name="delete_cashback_category_message">Удалить эту категорию из настроек кэшбэка?</string>
+
+    <!-- News -->
+    <string name="news_title">Новости</string>
+    <string name="news_loading">Загрузка новостей…</string>
+    <string name="news_empty">Новостей пока нет.</string>
+    <string name="news_error">Не удалось загрузить новости.\nПроверьте подключение к интернету.</string>
+    <string name="news_retry">Обновить</string>
 
     <!-- Scan -->
     <string name="scan_screenshot">Распознать по скриншоту</string>

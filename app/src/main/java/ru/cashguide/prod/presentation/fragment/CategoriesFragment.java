@@ -12,8 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +23,7 @@ import ru.cashguide.prod.R;
 import ru.cashguide.prod.data.local.db.Category;
 import ru.cashguide.prod.presentation.adapter.CategoryAdapter;
 import ru.cashguide.prod.presentation.viewmodel.CategoriesViewModel;
+import ru.cashguide.prod.util.DrawerUi;
 
 public class CategoriesFragment extends Fragment {
 
@@ -45,7 +44,7 @@ public class CategoriesFragment extends Fragment {
         viewModel.start();
 
         MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
-        NavigationUI.setupWithNavController(toolbar, NavHostFragment.findNavController(this));
+        DrawerUi.setupWithNavController(toolbar, this);
 
         TextInputEditText etCategoryName = view.findViewById(R.id.etCategoryName);
         MaterialButton btnAdd = view.findViewById(R.id.btnAdd);
