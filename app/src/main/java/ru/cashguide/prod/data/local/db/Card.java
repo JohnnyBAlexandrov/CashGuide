@@ -21,6 +21,7 @@ public class Card {
     @NonNull
     public String currency = "RUB";
 
+    /** Месячный лимит выплаты кэшбэка по карте, nullable = нет лимита. */
     public Double monthlyCashbackLimit;
 
     public int sortOrder;

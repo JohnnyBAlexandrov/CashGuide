@@ -14,10 +14,11 @@ import ru.cashguide.prod.data.local.db.CashbackCategory;
 import ru.cashguide.prod.data.local.db.Transaction;
 
 /**
- * Распределяет месячный кэшбэк по отдельным операциям с учётом лимита:
- * операции в рамках одной карты, категории и месяца упорядочиваются по дате,
- * и лимит «расходуется» по мере поступления операций. На операции сверх
- * лимита кэшбэк уже не начисляется.
+ * Распределяет месячный кэшбэк по отдельным операциям с учётом лимитов выплаты.
+ * Операции карты за месяц упорядочиваются по дате, и лимиты «расходуются»
+ * по мере поступления: кэшбэк по каждой операции ограничен остатком лимита
+ * своей категории и общим остатком лимита карты. На операции сверх лимита
+ * кэшбэк уже не начисляется.
  */
 public final class TransactionCashbackCalculator {
 
@@ -31,7 +32,7 @@ public final class TransactionCashbackCalculator {
         return calculate(transactions, settings, cardsById, ZoneId.systemDefault());
     }
 
-    /** Возвращает id операции -> заработанный по ней кэшбэк (0, если нет). */
+    /** Возвращает id -> заработанный по операции кэшбэк (0, если нет). */
     public static Map<Long, Double> calculate(List<Transaction> transactions,
                                               List<CashbackCategory> settings,
                                               Map<Long, Card> cardsById,
@@ -47,42 +48,60 @@ public final class TransactionCashbackCalculator {
         Map<Key, CashbackCategory> settingsByKey = new HashMap<>();
         for (CashbackCategory setting : settings) {
             if (setting != null) {
-                settingsByKey.put(Key.ofCard(setting), setting);
+                settingsByKey.put(Key.ofSetting(setting), setting);
             }
         }
 
-        Map<Key, List<Transaction>> grouped = new HashMap<>();
+        Map<CardMonth, List<Transaction>> groups = new HashMap<>();
+        Map<Long, Card> cardById = new HashMap<>(cardsById);
         for (Transaction transaction : transactions) {
             if (transaction == null || !Transaction.TYPE_EXPENSE.equals(transaction.type)) {
                 continue;
             }
             LocalDate date = Instant.ofEpochMilli(transaction.date).atZone(zone).toLocalDate();
-            Key key = Key.ofTransaction(transaction, date);
-            grouped.computeIfAbsent(key, k -> new ArrayList<>()).add(transaction);
+            CardMonth group = new CardMonth(transaction.cardId, date.getMonthValue(), date.getYear());
+            groups.computeIfAbsent(group, k -> new ArrayList<>()).add(transaction);
         }
 
-        for (Map.Entry<Key, List<Transaction>> entry : grouped.entrySet()) {
-            Key key = entry.getKey();
-            CashbackCategory setting = settingsByKey.get(key);
-            if (setting == null || setting.percent <= 0.0) {
-                continue;
-            }
-            Card card = cardsById.get(key.cardId);
-            double limit = CashbackCalculator.monthlyLimit(card, setting);
+        for (Map.Entry<CardMonth, List<Transaction>> groupEntry : groups.entrySet()) {
+            CardMonth group = groupEntry.getKey();
+            Card card = cardById.get(group.cardId);
+            double cardCap = CashbackCalculator.cardCap(card);
+            double cardUsed = 0.0;
+            Map<Key, Double> categoryUsed = new HashMap<>();
 
-            List<Transaction> monthTxs = entry.getValue();
+            List<Transaction> monthTxs = groupEntry.getValue();
             monthTxs.sort((a, b) -> a.date == b.date
                     ? Long.compare(a.id, b.id)
                     : Long.compare(a.date, b.date));
 
-            double remaining = limit;
             for (Transaction tx : monthTxs) {
-                double eligible = (limit > 0.0 && tx.amount > remaining)
-                        ? Math.max(0.0, remaining) : tx.amount;
-                result.put(tx.id, eligible * setting.percent / 100.0);
-                if (limit > 0.0) {
-                    remaining -= eligible;
+                Key categoryKey = Key.of(group, tx.category);
+                CashbackCategory setting = settingsByKey.get(categoryKey);
+                if (setting == null || setting.percent <= 0.0) {
+                    continue;
                 }
+                double txCash = tx.amount * setting.percent / 100.0;
+
+                double categoryRemaining = Double.POSITIVE_INFINITY;
+                double categoryCap = CashbackCalculator.categoryLimit(setting);
+                if (categoryCap > 0.0) {
+                    double used = categoryUsed.getOrDefault(categoryKey, 0.0);
+                    categoryRemaining = Math.max(0.0, categoryCap - used);
+                }
+
+                double cardRemaining = Double.POSITIVE_INFINITY;
+                if (cardCap > 0.0) {
+                    cardRemaining = Math.max(0.0, cardCap - cardUsed);
+                }
+
+                double applied = Math.min(txCash, Math.min(categoryRemaining, cardRemaining));
+                if (applied <= 0.0) {
+                    continue;
+                }
+                result.put(tx.id, applied);
+                categoryUsed.merge(categoryKey, applied, Double::sum);
+                cardUsed += applied;
             }
         }
         return result;
@@ -102,12 +121,12 @@ public final class TransactionCashbackCalculator {
             this.category = category;
         }
 
-        static Key ofCard(CashbackCategory setting) {
+        static Key ofSetting(CashbackCategory setting) {
             return new Key(setting.cardId, setting.month, setting.year, setting.category);
         }
 
-        static Key ofTransaction(Transaction transaction, LocalDate date) {
-            return new Key(transaction.cardId, date.getMonthValue(), date.getYear(), transaction.category);
+        static Key of(CardMonth group, String category) {
+            return new Key(group.cardId, group.month, group.year, category);
         }
 
         @Override
@@ -126,6 +145,36 @@ public final class TransactionCashbackCalculator {
         @Override
         public int hashCode() {
             return Objects.hash(cardId, month, year, category);
+        }
+    }
+
+    private static final class CardMonth {
+
+        final long cardId;
+        final int month;
+        final int year;
+
+        CardMonth(long cardId, int month, int year) {
+            this.cardId = cardId;
+            this.month = month;
+            this.year = year;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof CardMonth)) {
+                return false;
+            }
+            CardMonth other = (CardMonth) o;
+            return cardId == other.cardId && month == other.month && year == other.year;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(cardId, month, year);
         }
     }
 }

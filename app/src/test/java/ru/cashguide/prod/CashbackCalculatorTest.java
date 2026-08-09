@@ -2,6 +2,8 @@ package ru.cashguide.prod;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 import ru.cashguide.prod.data.local.db.Card;
@@ -25,33 +27,21 @@ public class CashbackCalculatorTest {
     }
 
     @Test
-    public void spentWithinLimitGivesFullCashback() {
-        CashbackCategory setting = category(2.0, 500, 1000.0);
-        assertEquals(10.00, CashbackCalculator.earnedInCategory(card(1000.0), setting), 0.001);
+    public void spentEarnsPercentWithoutLimits() {
+        CashbackCategory setting = category(2.0, 500, null);
+        assertEquals(10.00, CashbackCalculator.earnedInCategory(card(null), setting), 0.001);
     }
 
     @Test
-    public void spentAtLimitGivesFullCashback() {
-        CashbackCategory setting = category(2.0, 1000, 1000.0);
-        assertEquals(20.00, CashbackCalculator.earnedInCategory(card(1000.0), setting), 0.001);
+    public void categoryPayoutIsCappedByItsLimit() {
+        CashbackCategory setting = category(30.0, 5000, 1000.0);
+        assertEquals(1000.00, CashbackCalculator.earnedInCategory(card(5000.0), setting), 0.001);
     }
 
     @Test
-    public void spentAboveLimitIsCappedByCategoryLimit() {
+    public void categoryUnderLimitKeepsFullCashback() {
         CashbackCategory setting = category(10.0, 3000, 1000.0);
-        assertEquals(100.00, CashbackCalculator.earnedInCategory(card(2000.0), setting), 0.001);
-    }
-
-    @Test
-    public void noLimitGivesFullCashback() {
-        CashbackCategory setting = category(3.0, 400, null);
-        assertEquals(12.00, CashbackCalculator.earnedInCategory(card(null), setting), 0.001);
-    }
-
-    @Test
-    public void cardLimitAppliesWhenCategoryHasNone() {
-        CashbackCategory setting = category(5.0, 2000, null);
-        assertEquals(50.00, CashbackCalculator.earnedInCategory(card(1000.0), setting), 0.001);
+        assertEquals(300.00, CashbackCalculator.earnedInCategory(card(null), setting), 0.001);
     }
 
     @Test
@@ -66,8 +56,26 @@ public class CashbackCalculatorTest {
     }
 
     @Test
-    public void monthlyLimitPrefersCategoryOverCard() {
-        CashbackCategory setting = category(2.0, 2000, 1500.0);
-        assertEquals(30.00, CashbackCalculator.earnedInCategory(card(500.0), setting), 0.001);
+    public void cardCapCapsCategorySum() {
+        CashbackCategory food = category(2.0, 3000, null);
+        CashbackCategory fuel = category(3.0, 2000, null);
+        assertEquals(120.00, CashbackCalculator.earnedOnCard(card(null),
+                Arrays.asList(food, fuel)), 0.001);
+        assertEquals(100.00, CashbackCalculator.earnedOnCard(card(100.0),
+                Arrays.asList(food, fuel)), 0.001);
+    }
+
+    @Test
+    public void categoryCapAppliesBeforeCardCap() {
+        CashbackCategory food = category(2.0, 3000, 40.0);
+        CashbackCategory fuel = category(3.0, 2000, 30.0);
+        // 40 + 30 = 70 по категориям, лимит карты 50
+        assertEquals(50.00, CashbackCalculator.earnedOnCard(card(50.0),
+                Arrays.asList(food, fuel)), 0.001);
+    }
+
+    @Test
+    public void emptyCardSettingsGivesZero() {
+        assertEquals(0.00, CashbackCalculator.earnedOnCard(card(100.0), null), 0.001);
     }
 }

@@ -102,7 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:ellipsize="end"
-                    android:maxLines="2"
+                    android:maxLines="4"
                     android:textColor="@color/muted"
                     android:textSize="13sp"
                     tools:text="Продукты 3%, АЗС 5%, Рестораны 1%" />

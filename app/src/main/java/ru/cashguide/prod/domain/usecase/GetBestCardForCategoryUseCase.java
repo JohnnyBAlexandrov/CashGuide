@@ -16,9 +16,9 @@ import ru.cashguide.prod.domain.model.CashbackCalculator;
 
 /**
  * Ищет лучшую карту для покупки по категории и сумме.
- * Учитывает настройки кэшбэка за текущий месяц и месячный лимит:
- * если spentThisMonth + сумма покупки > лимит, кэшбэк начисляется только
- * на оставшуюся в лимите часть (иначе 0).
+ * Учитывает настройки кэшбэка за месяц и месячные лимиты выплаты:
+ * кэшбэк по новой покупке ограничен остатком лимита категории
+ * и общим остатком лимита карты.
  */
 public class GetBestCardForCategoryUseCase {
 
@@ -36,7 +36,9 @@ public class GetBestCardForCategoryUseCase {
                 cashbackRepository.getAllForMonth(month.getMonthValue(), month.getYear());
 
         Map<Long, CashbackCategory> byCard = new HashMap<>();
+        Map<Long, List<CashbackCategory>> byCardSettings = new HashMap<>();
         for (CashbackCategory setting : settings) {
+            byCardSettings.computeIfAbsent(setting.cardId, k -> new ArrayList<>()).add(setting);
             if (setting.category.equals(category)) {
                 byCard.put(setting.cardId, setting);
             }
@@ -45,8 +47,9 @@ public class GetBestCardForCategoryUseCase {
         List<CardCashbackResult> results = new ArrayList<>();
         for (Card card : cards) {
             CashbackCategory setting = byCard.get(card.id);
+            List<CashbackCategory> cardSettings = byCardSettings.get(card.id);
             double percent = (setting != null) ? setting.percent : 0.0;
-            double cashback = calculateCashback(card, setting, amount);
+            double cashback = calculateCashback(card, setting, cardSettings, amount);
             results.add(new CardCashbackResult(card, percent, cashback));
         }
 
@@ -54,19 +57,27 @@ public class GetBestCardForCategoryUseCase {
         return results;
     }
 
-    private double calculateCashback(Card card, CashbackCategory setting, double amount) {
+    private double calculateCashback(Card card, CashbackCategory setting,
+                                     List<CashbackCategory> cardSettings, double amount) {
         if (setting == null || setting.percent <= 0.0) {
             return 0.0;
         }
-        double limit = CashbackCalculator.monthlyLimit(card, setting);
-        if (limit <= 0.0) {
-            return amount * setting.percent / 100.0;
+        double direct = amount * setting.percent / 100.0;
+
+        double categoryRemaining = Double.POSITIVE_INFINITY;
+        double categoryCap = CashbackCalculator.categoryLimit(setting);
+        if (categoryCap > 0.0) {
+            double alreadyEarned = CashbackCalculator.earnedInCategory(card, setting);
+            categoryRemaining = Math.max(0.0, categoryCap - alreadyEarned);
         }
-        double remaining = limit - setting.spentThisMonth;
-        if (remaining <= 0.0) {
-            return 0.0;
+
+        double cardRemaining = Double.POSITIVE_INFINITY;
+        double cardCap = CashbackCalculator.cardCap(card);
+        if (cardCap > 0.0) {
+            double alreadyEarned = CashbackCalculator.earnedOnCard(card, cardSettings);
+            cardRemaining = Math.max(0.0, cardCap - alreadyEarned);
         }
-        double effectiveAmount = Math.min(amount, remaining);
-        return effectiveAmount * setting.percent / 100.0;
+
+        return Math.min(direct, Math.min(categoryRemaining, cardRemaining));
     }
 }

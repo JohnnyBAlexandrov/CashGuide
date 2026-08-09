@@ -28,8 +28,8 @@ android {
         applicationId = "ru.cashguide.prod"
         minSdk = 24
         targetSdk = 36
-        versionCode = 77
-        versionName = "1.0.77"
+        versionCode = 79
+        versionName = "1.0.79"
 
         buildConfigField("String", "UPDATE_URL", "\"http://185.26.115.32:8088/cashguide/api/getversion.php\"")
         buildConfigField("String", "APK_URL", "\"http://185.26.115.32:8088/cashguide/cashguide.apk\"")

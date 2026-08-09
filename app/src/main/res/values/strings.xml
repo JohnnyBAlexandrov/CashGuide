@@ -25,7 +25,7 @@
     <string name="card_name">Название карты</string>
     <string name="card_balance">Баланс</string>
     <string name="card_currency">Валюта</string>
-    <string name="card_limit">Месячный лимит кэшбэка (необязательно)</string>
+    <string name="card_limit">Лимит выплаты кэшбэка за месяц, ₽ (необязательно)</string>
     <string name="card_limit_hint">Например: 3000</string>
     <string name="save">Сохранить</string>
     <string name="delete_card_btn">Удалить карту</string>
@@ -35,7 +35,7 @@
     <string name="cashback_for_month">Настройки на %1$s</string>
     <string name="copy_previous_month">Скопировать из прошлого месяца</string>
     <string name="cashback_percent">Кэшбэк, %</string>
-    <string name="cashback_limit">Лимит, ₽</string>
+    <string name="cashback_limit">Лимит кэшбэка за месяц, ₽</string>
     <string name="cashback_spent">Потрачено</string>
     <string name="save_settings">Сохранить настройки</string>
 
