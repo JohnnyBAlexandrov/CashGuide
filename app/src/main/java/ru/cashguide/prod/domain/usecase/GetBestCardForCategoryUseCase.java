@@ -13,6 +13,7 @@ import ru.cashguide.prod.data.repository.CardRepository;
 import ru.cashguide.prod.data.repository.CashbackRepository;
 import ru.cashguide.prod.domain.model.CardCashbackResult;
 import ru.cashguide.prod.domain.model.CashbackCalculator;
+import ru.cashguide.prod.util.CashbackRounding;
 
 /**
  * Ищет лучшую карту для покупки по категории и сумме.
@@ -62,7 +63,8 @@ public class GetBestCardForCategoryUseCase {
         if (setting == null || setting.percent <= 0.0) {
             return 0.0;
         }
-        double direct = amount * setting.percent / 100.0;
+        double base = CashbackRounding.roundedBase(amount);
+        double direct = base * setting.percent / 100.0;
 
         double categoryRemaining = Double.POSITIVE_INFINITY;
         double categoryCap = CashbackCalculator.categoryLimit(setting);

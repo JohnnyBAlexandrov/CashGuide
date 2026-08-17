@@ -28,11 +28,9 @@ android {
         applicationId = "ru.cashguide.prod"
         minSdk = 24
         targetSdk = 36
-        versionCode = 79
-        versionName = "1.0.79"
+        versionCode = 82
+        versionName = "1.0.82"
 
-        buildConfigField("String", "UPDATE_URL", "\"http://185.26.115.32:8088/cashguide/api/getversion.php\"")
-        buildConfigField("String", "APK_URL", "\"http://185.26.115.32:8088/cashguide/cashguide.apk\"")
         buildConfigField("String", "NEWS_URL", "\"http://185.26.115.32:8088/cashguide/api/news.php\"")
         buildConfigField("String", "BANNER_AD_UNIT_ID", adUnitId("ad_unit_id_banner", "demo-banner-yandex"))
         buildConfigField("String", "INTERSTITIAL_AD_UNIT_ID", adUnitId("ad_unit_id_interstitial", "demo-interstitial-yandex"))

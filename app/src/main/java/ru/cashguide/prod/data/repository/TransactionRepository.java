@@ -15,6 +15,7 @@ import ru.cashguide.prod.data.local.db.CashbackCategory;
 import ru.cashguide.prod.data.local.db.CashbackDao;
 import ru.cashguide.prod.data.local.db.Transaction;
 import ru.cashguide.prod.data.local.db.TransactionDao;
+import ru.cashguide.prod.util.CashbackRounding;
 
 public class TransactionRepository {
 
@@ -75,7 +76,7 @@ public class TransactionRepository {
         if (transaction.type.equals(Transaction.TYPE_EXPENSE)) {
             CashbackCategory category = findCategory(transaction);
             if (category != null) {
-                category.spentThisMonth += transaction.amount;
+                category.spentThisMonth += CashbackRounding.roundedBase(transaction.amount);
                 cashbackDao.update(category);
             }
         }
@@ -93,7 +94,8 @@ public class TransactionRepository {
         if (transaction.type.equals(Transaction.TYPE_EXPENSE)) {
             CashbackCategory category = findCategory(transaction);
             if (category != null) {
-                category.spentThisMonth = Math.max(0.0, category.spentThisMonth - transaction.amount);
+                category.spentThisMonth = Math.max(0.0,
+                        category.spentThisMonth - CashbackRounding.roundedBase(transaction.amount));
                 cashbackDao.update(category);
             }
         }

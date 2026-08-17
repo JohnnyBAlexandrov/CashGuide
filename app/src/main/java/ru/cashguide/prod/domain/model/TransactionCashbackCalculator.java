@@ -12,6 +12,7 @@ import org.threeten.bp.ZoneId;
 import ru.cashguide.prod.data.local.db.Card;
 import ru.cashguide.prod.data.local.db.CashbackCategory;
 import ru.cashguide.prod.data.local.db.Transaction;
+import ru.cashguide.prod.util.CashbackRounding;
 
 /**
  * Распределяет месячный кэшбэк по отдельным операциям с учётом лимитов выплаты.
@@ -81,7 +82,8 @@ public final class TransactionCashbackCalculator {
                 if (setting == null || setting.percent <= 0.0) {
                     continue;
                 }
-                double txCash = tx.amount * setting.percent / 100.0;
+                double cashBase = CashbackRounding.roundedBase(tx.amount);
+                double txCash = cashBase * setting.percent / 100.0;
 
                 double categoryRemaining = Double.POSITIVE_INFINITY;
                 double categoryCap = CashbackCalculator.categoryLimit(setting);

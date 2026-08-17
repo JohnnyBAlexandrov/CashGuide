@@ -152,4 +152,26 @@ public class TransactionCashbackCalculatorTest {
         assertEquals(12.00, earned(result, 1L), 0.001);
         assertEquals(18.00, earned(result, 2L), 0.001);
     }
+
+    @Test
+    public void cashbackBaseIsRoundedDownToHundreds() {
+        long now = millis(2026, 8, 15);
+        List<Transaction> txs = Arrays.asList(tx(1L, 10L, "Продукты", 299.99, now));
+        List<CashbackCategory> settings =
+                Arrays.asList(setting(10L, "Продукты", 10.0, null, 8, 2026));
+        Map<Long, Double> result = TransactionCashbackCalculator.calculate(
+                txs, settings, new HashMap<>(), UTC);
+        assertEquals(20.00, earned(result, 1L), 0.001);
+    }
+
+    @Test
+    public void belowHundredRoundsBaseToZero() {
+        long now = millis(2026, 8, 15);
+        List<Transaction> txs = Arrays.asList(tx(1L, 10L, "Продукты", 99.99, now));
+        List<CashbackCategory> settings =
+                Arrays.asList(setting(10L, "Продукты", 10.0, null, 8, 2026));
+        Map<Long, Double> result = TransactionCashbackCalculator.calculate(
+                txs, settings, new HashMap<>(), UTC);
+        assertEquals(0.00, earned(result, 1L), 0.001);
+    }
 }

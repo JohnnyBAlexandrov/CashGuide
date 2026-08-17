@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -13,19 +12,24 @@
         android:layout_height="?attr/actionBarSize"
         app:title="@string/cashback_setup_title" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:scrollbars="vertical">
 
-        <TextView
-            android:id="@+id/tvCardName"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="Т-Банк • Дебетовая" />
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvCardName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="Т-Банк • Дебетовая" />
 
         <TextView
             android:id="@+id/tvMonth"
@@ -36,29 +40,53 @@
             android:textSize="13sp"
             tools:text="Настройки на август 2026" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAddCategory"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/add_category"
-            app:icon="@drawable/ic_add"
-            app:iconGravity="textStart"
-            app:iconSize="18dp"
-            app:iconTint="@color/colorPrimary" />
+            android:orientation="horizontal">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnScan"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/scan_screenshot"
-            app:icon="@drawable/ic_search"
-            app:iconGravity="textStart"
-            app:iconSize="18dp"
-            app:iconTint="@color/colorPrimary" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddCategory"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/add_category"
+                android:paddingHorizontal="4dp"
+                app:icon="@drawable/ic_add"
+                app:iconGravity="textEnd"
+                app:iconSize="22dp"
+                app:iconTint="@color/colorPrimary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnScan"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:contentDescription="@string/scan_screenshot"
+                android:paddingHorizontal="4dp"
+                app:icon="@drawable/ic_search"
+                app:iconGravity="textEnd"
+                app:iconSize="22dp"
+                app:iconTint="@color/colorPrimary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCopy"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:contentDescription="@string/copy_previous_month"
+                android:paddingHorizontal="4dp"
+                app:icon="@drawable/ic_history"
+                app:iconGravity="textEnd"
+                app:iconSize="22dp"
+                app:iconTint="@color/colorPrimary" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvScanInfo"
@@ -79,19 +107,8 @@
             android:textColor="@color/expense"
             android:textSize="13sp"
             tools:text="Не распознано: IMeTCKIM MMp. Добавьте их вручную в раздел «Категории» для корректного распознавания" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCopy"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/copy_previous_month"
-            app:icon="@drawable/ic_history"
-            app:iconGravity="textStart"
-            app:iconSize="18dp"
-            app:iconTint="@color/colorPrimary" />
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCategories"

@@ -7,6 +7,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/content_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -34,11 +35,11 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/drawer_container"
         android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/colorSurface"
-        android:fitsSystemWindows="true"
         android:orientation="vertical">
 
         <com.google.android.material.navigation.NavigationView

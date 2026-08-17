@@ -65,7 +65,7 @@ public class HistoryFragment extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.rvTransactions);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new TransactionAdapter(item -> confirmDelete(item.transaction));
+        adapter = new TransactionAdapter(item -> showActions(item.transaction));
         recyclerView.setAdapter(adapter);
 
         Spinner spCardFilter = view.findViewById(R.id.spCardFilter);
@@ -168,6 +168,22 @@ public class HistoryFragment extends Fragment {
                     }
                 },
                 initial.getYear(), initial.getMonthValue() - 1, initial.getDayOfMonth()).show();
+    }
+
+    private void showActions(Transaction transaction) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(transaction.category)
+                .setItems(new String[]{getString(R.string.edit), getString(R.string.delete)}, (dialog, which) -> {
+                    if (which == 0) {
+                        Bundle args = new Bundle();
+                        args.putLong("transactionId", transaction.id);
+                        NavHostFragment.findNavController(HistoryFragment.this)
+                                .navigate(R.id.action_history_to_transactionEdit, args);
+                    } else {
+                        confirmDelete(transaction);
+                    }
+                })
+                .show();
     }
 
     private void confirmDelete(Transaction transaction) {
