@@ -72,7 +72,7 @@ public class CardDetailFragment extends Fragment {
                 android.R.layout.simple_spinner_dropdown_item, CURRENCIES));
 
         viewModel.getCard().observe(getViewLifecycleOwner(), card -> {
-            if (card == null) {
+            if (card == null || card.id <= 0) {
                 return;
             }
             etBank.setText(card.bankName);

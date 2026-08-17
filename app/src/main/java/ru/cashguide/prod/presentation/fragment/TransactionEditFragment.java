@@ -77,9 +77,6 @@ public class TransactionEditFragment extends Fragment {
 
         RadioGroup rgType = view.findViewById(R.id.rgType);
         TextInputEditText etAmount = view.findViewById(R.id.etAmount);
-        if (transactionId <= 0) {
-            etAmount.setText("");
-        }
         TextInputEditText etNote = view.findViewById(R.id.etNote);
         btnDate = view.findViewById(R.id.btnDate);
         MaterialButton btnSave = view.findViewById(R.id.btnSave);
@@ -132,7 +129,7 @@ public class TransactionEditFragment extends Fragment {
         });
 
         viewModel.getTransaction().observe(getViewLifecycleOwner(), transaction -> {
-            if (transaction == null) {
+            if (transaction == null || transaction.id <= 0) {
                 return;
             }
             selectCard(transaction.cardId);
